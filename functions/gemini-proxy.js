@@ -24,12 +24,11 @@ exports.handler = async function (event, context) {
     const data = JSON.parse(event.body);
     let prompt;
 
-    // ** LÓGICA DE CONSTRUÇÃO DO PROMPT NO SERVIDOR **
-    // O navegador não vê esta parte.
+    // ** LÓGICA DE CONSTRUÇÃO DO PROMPT NO SERVIDOR (VERSÃO REFINADA) **
     if (data.type === 'description') {
-      prompt = `Crie uma descrição de venda cativante e calorosa para um(a) "${data.pieceName}". A peça foi feita com os seguintes materiais: ${data.materials.join(', ')}. O preço de venda é ${data.finalPrice}. A descrição deve ser ideal para um post no Instagram, destacando o cuidado artesanal, a qualidade e o valor do produto. Use emojis para deixar o texto mais atraente.`;
+      prompt = `Aja como uma artesã carinhosa e criativa, falando com uma amiga. Crie uma legenda curta e charmosa para um post de Instagram sobre a venda de um(a) "${data.pieceName}". O preço é ${data.finalPrice}. A peça foi feita com ${data.materials.join(', ')}. O texto deve ser dividido em pequenos parágrafos, usar uma linguagem natural e casual, e terminar com uma chamada para ação convidativa. Use poucos e bons emojis. Evite usar asteriscos ou negrito.`;
     } else if (data.type === 'suggestions') {
-      prompt = `Sou uma artesã e criei um(a) "${data.pieceName}" com estes materiais: ${data.materials.join(', ')}. Levei ${data.totalTime} para fazer e o preço de venda é ${data.finalPrice}. Me dê 3 ideias criativas e práticas para vender melhor este produto. As ideias podem incluir: para quem vender (público-alvo), como apresentar o produto de forma diferente, ou que outros produtos poderiam formar um kit com ele para aumentar o valor da venda. Formate a resposta com títulos para cada ideia.`;
+      prompt = `Aja como uma mentora de artesanato experiente e amigável. Crie 3 dicas rápidas e fáceis de entender para ajudar uma artesã a vender melhor seu/sua "${data.pieceName}", que custa ${data.finalPrice}. As dicas devem ser curtas, diretas e em um tom encorajador. Use uma linguagem simples. Formate a resposta em uma lista numerada (1., 2., 3.).`;
     } else {
       throw new Error("Tipo de solicitação inválido.");
     }

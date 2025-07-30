@@ -65,91 +65,547 @@
 
     <!-- Importe os scripts do Firebase aqui -->
     <script type="module">
-        // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-        // Your web app's Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyBNYILyUqohOzxzYRRR-HrbPo71q14TECw",
-            authDomain: "arttesdabel-calculadora.firebaseapp.com",
-            projectId: "arttesdabel-calculadora",
-            storageBucket: "arttesdabel-calculadora.firebasestorage.app",
-            messagingSenderId: "343625501018",
-            appId: "1:343625501018:web:6d2126d44656128dd50b63",
-            measurementId: "G-QPTEENELNK"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-
-        const loginButton = document.getElementById('loginButton');
-        const registerButton = document.getElementById('registerButton');
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        const errorMessageDiv = document.getElementById('errorMessage');
-
-        // Se o usuário já estiver logado, redireciona para a calculadora
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                // CORREÇÃO: Usar um caminho absoluto a partir da raiz do site.
-                window.location.href = '/calculadora.html'; 
+        // Função para buscar a configuração do Firebase do backend
+        async function getFirebaseConfig() {
+            try {
+                const response = await fetch('/api/get-firebase-config');
+                if (!response.ok) {
+                    throw new Error('Falha ao buscar configuração do Firebase.');
+                }
+                return await response.json();
+            } catch (error) {
+                console.error(error);
+                document.getElementById('errorMessage').textContent = 'Erro de configuração. Não foi possível carregar a página.';
+                document.getElementById('errorMessage').classList.remove('hidden');
+                return null;
             }
-        });
-
-        // Função para mostrar erros
-        function showAuthError(message) {
-            errorMessageDiv.textContent = message;
-            errorMessageDiv.classList.remove('hidden');
         }
 
-        // Evento de Login
-        loginButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            const email = emailInput.value;
-            const password = passwordInput.value;
+        // Função principal para inicializar a autenticação
+        async function initializeAuth() {
+            const firebaseConfig = await getFirebaseConfig();
 
-            signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    // O redirecionamento será feito pelo onAuthStateChanged
-                })
-                .catch((error) => {
-                    let message = "Ocorreu um erro ao tentar entrar. Verifique seus dados.";
-                    if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
-                        message = "Email ou senha inválidos. Tente novamente.";
-                    }
-                    showAuthError(message);
-                });
-        });
+            if (!firebaseConfig) return; // Para a execução se a config falhar
 
-        // Evento de Cadastro
-        registerButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            const email = emailInput.value;
-            const password = passwordInput.value;
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
 
-            if (password.length < 6) {
-                showAuthError("A senha deve ter pelo menos 6 caracteres.");
-                return;
+            const loginButton = document.getElementById('loginButton');
+            const registerButton = document.getElementById('registerButton');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const errorMessageDiv = document.getElementById('errorMessage');
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    window.location.href = '/calculadora.html'; 
+                }
+            });
+
+            function showAuthError(message) {
+                errorMessageDiv.textContent = message;
+                errorMessageDiv.classList.remove('hidden');
             }
 
-            createUserWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    // O redirecionamento será feito pelo onAuthStateChanged
-                    alert("Cadastro realizado com sucesso! Você será redirecionada.");
-                })
-                .catch((error) => {
-                    let message = "Ocorreu um erro ao tentar cadastrar.";
-                    if (error.code === 'auth/email-already-in-use') {
-                        message = "Este email já está cadastrado. Tente fazer o login.";
-                    } else if (error.code === 'auth/invalid-email') {
-                        message = "O formato do email é inválido.";
-                    }
-                    showAuthError(message);
-                });
-        });
+            loginButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                const email = emailInput.value;
+                const password = passwordInput.value;
+                signInWithEmailAndPassword(auth, email, password)
+                    .catch((error) => {
+                        let message = "Ocorreu um erro ao tentar entrar. Verifique seus dados.";
+                        if (error.code === 'auth/invalid-credential') {
+                            message = "Email ou senha inválidos. Tente novamente.";
+                        }
+                        showAuthError(message);
+                    });
+            });
 
+            registerButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                const email = emailInput.value;
+                const password = passwordInput.value;
+                if (password.length < 6) {
+                    showAuthError("A senha deve ter pelo menos 6 caracteres.");
+                    return;
+                }
+                createUserWithEmailAndPassword(auth, email, password)
+                    .then(() => {
+                        alert("Cadastro realizado com sucesso! Você será redirecionada.");
+                    })
+                    .catch((error) => {
+                        let message = "Ocorreu um erro ao tentar cadastrar.";
+                        if (error.code === 'auth/email-already-in-use') {
+                            message = "Este email já está cadastrado. Tente fazer o login.";
+                        } else if (error.code === 'auth/invalid-email') {
+                            message = "O formato do email é inválido.";
+                        }
+                        showAuthError(message);
+                    });
+            });
+        }
+
+        initializeAuth();
+    </script>
+</body>
+</html>
+```
+
+**Calculadora (Segura)**
+
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Preços - Arttes da Bel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'brand-bg': '#F3E4D7',
+                        'brand-text': '#786D4E',
+                        'brand-olive': '#A5A184',
+                        'brand-pink': '#F39B92',
+                        'brand-primary': '#DA7E55',
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'sans-serif'],
+                        'display': ['Montserrat', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 220px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -110px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+            font-family: 'Inter', sans-serif;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #DA7E55;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        body.loading {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-brand-bg/50 text-brand-text loading">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-4xl">
+        
+        <header class="text-center mb-12">
+            <div class="flex justify-center items-center gap-4 sm:gap-6 relative">
+                <img src="https://raw.githubusercontent.com/Rodreitz/sites/adab42e1b226613b95b484f00337e8c1903b186b/LOGO%20COM%20NOME%20transparente.png" alt="Logo Arttes da Bel" class="w-24 h-auto">
+                <div class="text-left">
+                    <h1 class="font-display text-3xl sm:text-4xl md:text-5xl text-brand-primary">Calculadora F.L.O.R.A.</h1>
+                    <p class="text-md sm:text-lg text-brand-text mt-1">Uma ferramenta da Arttes da Bel</p>
+                </div>
+                <button id="logoutButton" class="absolute top-0 right-0 mt-2 mr-2 text-sm bg-brand-pink text-white font-semibold py-1 px-3 rounded-full hover:bg-brand-primary transition-colors">Sair</button>
+            </div>
+        </header>
+
+        <main class="space-y-8">
+            <!-- Seções da calculadora... -->
+            <section class="bg-white p-6 rounded-2xl shadow-lg shadow-brand-olive/20">
+                <h2 class="font-display text-2xl text-brand-text mb-4 flex items-center">
+                    <span class="text-3xl mr-3">1.</span> Dados do Seu Ateliê 
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div>
+                        <label for="hourlyRate" class="block text-sm font-medium text-brand-text">Valor da sua Hora de Trabalho</label>
+                        <div class="input-group mt-1">
+                            <span class="input-prefix">R$</span>
+                            <input type="number" id="hourlyRate" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" placeholder="20.00">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="fixedCosts" class="block text-sm font-medium text-brand-text">Custos Fixos Mensais</label>
+                        <div class="input-group mt-1">
+                            <span class="input-prefix">R$</span>
+                            <input type="number" id="fixedCosts" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" placeholder="300.00">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="hoursWorked" class="block text-sm font-medium text-brand-text">Horas Trabalhadas por Mês</label>
+                        <input type="number" id="hoursWorked" class="w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" placeholder="80">
+                    </div>
+                </div>
+                 <div class="mt-4 bg-brand-bg p-3 rounded-lg text-center">
+                    <p class="text-sm text-brand-text">Custo Fixo por Hora do Ateliê:</p>
+                    <p id="fixedCostPerHour" class="text-lg font-bold text-brand-text">R$ 0,00</p>
+                </div>
+            </section>
+            <section class="bg-white p-6 rounded-2xl shadow-lg shadow-brand-olive/20">
+                <h2 class="font-display text-2xl text-brand-text mb-4 flex items-center">
+                    <span class="text-3xl mr-3">2.</span> Custos da Peça
+                </h2>
+                <div>
+                    <label for="pieceName" class="block text-sm font-medium text-brand-text">Nome da Peça (Ex: Jogo Americano Floral)</label>
+                    <input type="text" id="pieceName" class="w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" placeholder="Jogo Americano Floral">
+                </div>
+                <h3 class="font-display text-lg font-semibold text-brand-text mt-6 mb-2">A. Custo dos Materiais</h3>
+                <div id="materialsContainer" class="space-y-2"></div>
+                <button id="addMaterial" class="mt-3 text-sm text-brand-primary hover:text-brand-text font-medium">+ Adicionar Material</button>
+                <div class="mt-4 text-right bg-gray-50 p-2 rounded-md">
+                    <span class="font-medium text-gray-600">Subtotal de Materiais:</span>
+                    <span id="materialsSubtotal" class="font-bold text-gray-800 ml-2">R$ 0,00</span>
+                </div>
+                <h3 class="font-display text-lg font-semibold text-brand-text mt-6 mb-2">B. Custo da Mão de Obra</h3>
+                <div id="tasksContainer" class="space-y-2"></div>
+                <button id="addTask" class="mt-3 text-sm text-brand-primary hover:text-brand-text font-medium">+ Adicionar Tarefa</button>
+                <div class="mt-4 text-right bg-gray-50 p-2 rounded-md">
+                    <span class="font-medium text-gray-600">Tempo Total de Produção:</span>
+                    <span id="totalTime" class="font-bold text-gray-800 ml-2">0 min</span>
+                </div>
+            </section>
+            <section class="bg-white p-6 rounded-2xl shadow-lg shadow-brand-olive/20">
+                <h2 class="font-display text-2xl text-brand-text mb-4 flex items-center">
+                   <span class="text-3xl mr-3">3.</span> Resumo dos Custos
+                </h2>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-md">
+                        <span class="font-medium text-gray-600">Custo Total de Materiais</span>
+                        <span id="summaryMaterials" class="font-bold text-lg text-gray-800">R$ 0,00</span>
+                    </div>
+                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-md">
+                        <span class="font-medium text-gray-600">Custo Total da Mão de Obra</span>
+                        <span id="summaryLabor" class="font-bold text-lg text-gray-800">R$ 0,00</span>
+                    </div>
+                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-md">
+                        <span class="font-medium text-gray-600">Custo Fixo da Peça</span>
+                        <span id="summaryFixed" class="font-bold text-lg text-gray-800">R$ 0,00</span>
+                    </div>
+                    <div class="flex justify-between items-center bg-brand-olive/20 p-4 rounded-lg mt-2">
+                        <span class="font-bold text-brand-text text-lg">CUSTO DE PRODUÇÃO DA PEÇA</span>
+                        <span id="productionCost" class="font-extrabold text-2xl text-brand-text">R$ 0,00</span>
+                    </div>
+                </div>
+            </section>
+            <section class="bg-white p-6 rounded-2xl shadow-lg shadow-brand-olive/20">
+                <h2 class="font-display text-2xl text-brand-text mb-4 flex items-center">
+                    <span class="text-3xl mr-3">4.</span> Preço Final de Venda
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
+                    <div>
+                        <label for="profitMargin" class="block text-sm font-medium text-brand-text">Sua Margem de Lucro (%)</label>
+                        <input type="number" id="profitMargin" class="w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" placeholder="100">
+                    </div>
+                    <div>
+                        <label for="fees" class="block text-sm font-medium text-brand-text">Taxas (Cartão, Marketplace, etc. em %)</label>
+                        <input type="number" id="fees" class="w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" placeholder="5">
+                    </div>
+                </div>
+                <div class="mt-6 space-y-4">
+                    <div class="bg-brand-primary text-white p-6 rounded-2xl text-center">
+                        <p class="font-semibold text-lg opacity-90">PREÇO DE VENDA FINAL (SUGERIDO)</p>
+                        <p id="finalPrice" class="font-extrabold text-5xl tracking-tight">R$ 0,00</p>
+                    </div>
+                    <div class="bg-brand-pink/30 border-l-4 border-brand-pink text-brand-text p-4 rounded-r-lg">
+                        <div class="flex justify-between items-center">
+                            <p class="font-bold text-lg">LUCRO LÍQUIDO POR PEÇA:</p>
+                            <p id="netProfit" class="font-bold text-2xl">R$ 0,00</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="bg-white p-6 rounded-2xl shadow-lg shadow-brand-olive/20">
+                <h2 class="font-display text-2xl text-brand-text mb-4 flex items-center">
+                   <span class="text-3xl mr-3">5.</span> Assistente de Vendas IA ✨
+                </h2>
+                <p class="text-gray-600 mb-6">Use a inteligência artificial para criar textos de venda e ter ideias para divulgar seu produto. Preencha os dados da peça acima e clique nos botões abaixo.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="font-display text-lg font-semibold text-brand-text">Descrição Mágica para Redes Sociais</h3>
+                        <button id="generateDescription" class="w-full mt-2 bg-brand-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-brand-text transition-colors flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                            Gerar Descrição
+                        </button>
+                        <div id="descriptionLoader" class="loader hidden"></div>
+                        <div id="descriptionResult" class="mt-4 p-4 bg-gray-50 rounded-md text-gray-700 whitespace-pre-wrap min-h-[100px] border"></div>
+                    </div>
+                    <div>
+                        <h3 class="font-display text-lg font-semibold text-brand-text">Ideias Criativas para Vender Mais</h3>
+                        <button id="generateSuggestions" class="w-full mt-2 bg-brand-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-brand-text transition-colors flex items-center justify-center">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.121-3.536a1 1 0 011.414 0l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 010-1.414zM4.95 16.464l.707-.707a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414zm-3.536-2.121a1 1 0 010-1.414l.707-.707a1 1 0 011.414 1.414l-.707.707a1 1 0 01-1.414 0zM10 18a1 1 0 01-1-1v-1a1 1 0 112 0v1a1 1 0 01-1 1z" clip-rule="evenodd" /></svg>
+                            Gerar Ideias
+                        </button>
+                        <div id="suggestionsLoader" class="loader hidden"></div>
+                        <div id="suggestionsResult" class="mt-4 p-4 bg-gray-50 rounded-md text-gray-700 whitespace-pre-wrap min-h-[100px] border"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="text-center mt-12 text-sm text-gray-500">
+            <p>&copy; 2024 - Arttes da Bel</p>
+        </footer>
+
+    </div>
+
+    <!-- Importe os scripts do Firebase aqui -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        // Função para buscar a configuração do Firebase do backend
+        async function getFirebaseConfig() {
+            try {
+                const response = await fetch('/api/get-firebase-config');
+                if (!response.ok) {
+                    throw new Error('Falha ao buscar configuração do Firebase.');
+                }
+                return await response.json();
+            } catch (error) {
+                console.error(error);
+                // Adiciona uma mensagem de erro visível para o usuário se a config falhar
+                document.body.innerHTML = `<div class="text-center p-8">Erro de configuração. Não foi possível carregar a página.</div>`;
+                document.body.classList.remove('loading');
+                return null;
+            }
+        }
+
+        async function initializeAppAndAuth() {
+            const firebaseConfig = await getFirebaseConfig();
+            if (!firebaseConfig) return;
+
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+
+            const logoutButton = document.getElementById('logoutButton');
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    document.body.classList.remove('loading');
+                } else {
+                    window.location.href = '/index.html'; 
+                }
+            });
+
+            logoutButton.addEventListener('click', () => {
+                signOut(auth).catch((error) => console.error("Erro ao sair:", error));
+            });
+
+            // O resto do script da calculadora continua aqui...
+            const formatCurrency = (value) => {
+                return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+            };
+            
+            const callAIAssistant = async (prompt) => {
+                const proxyUrl = '/api/gemini-proxy'; 
+                try {
+                    const response = await fetch(proxyUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ prompt: prompt })
+                    });
+                    if (!response.ok) {
+                        throw new Error(`Erro na chamada do assistente: ${response.statusText}`);
+                    }
+                    const result = await response.json();
+                    return result.text;
+                } catch (error) {
+                    console.error("Erro ao chamar o assistente IA:", error);
+                    return "Desculpe, não foi possível gerar a resposta no momento. Ocorreu um erro de comunicação.";
+                }
+            };
+
+            function setupCalculator() {
+                const inputs = document.querySelectorAll('input[type="number"]');
+                const materialsContainer = document.getElementById('materialsContainer');
+                const tasksContainer = document.getElementById('tasksContainer');
+                const addMaterialBtn = document.getElementById('addMaterial');
+                const addTaskBtn = document.getElementById('addTask');
+
+                let materialId = 0;
+                let taskId = 0;
+
+                const addMaterialRow = () => {
+                    materialId++;
+                    const div = document.createElement('div');
+                    div.classList.add('grid', 'grid-cols-1', 'md:grid-cols-4', 'gap-2', 'items-center', 'material-row');
+                    div.innerHTML = `
+                        <input type="text" placeholder="Nome do Material" class="material-name w-full p-2 border border-gray-200 rounded-md text-sm md:col-span-2">
+                        <div class="input-group"><span class="input-prefix text-sm">R$</span><input type="number" placeholder="Preço (ex: 30.00)" class="material-price w-full p-2 border border-gray-200 rounded-md text-sm"></div>
+                        <div class="flex items-center">
+                            <input type="number" placeholder="Qtd. Usada" class="material-quantity w-full p-2 border border-gray-200 rounded-md text-sm">
+                            <button class="remove-btn text-red-500 hover:text-red-700 ml-2 p-1">&times;</button>
+                        </div>
+                    `;
+                    materialsContainer.appendChild(div);
+                    div.querySelector('.remove-btn').addEventListener('click', () => {
+                        div.remove();
+                        calculateAll();
+                    });
+                };
+
+                const addTaskRow = () => {
+                    taskId++;
+                    const div = document.createElement('div');
+                    div.classList.add('grid', 'grid-cols-1', 'md:grid-cols-2', 'gap-2', 'items-center', 'task-row');
+                    div.innerHTML = `
+                        <input type="text" placeholder="Nome da Tarefa" class="w-full p-2 border border-gray-200 rounded-md text-sm">
+                        <div class="flex items-center">
+                            <input type="number" placeholder="Tempo (minutos)" class="task-time w-full p-2 border border-gray-200 rounded-md text-sm">
+                            <button class="remove-btn text-red-500 hover:text-red-700 ml-2 p-1">&times;</button>
+                        </div>
+                    `;
+                    tasksContainer.appendChild(div);
+                    div.querySelector('.remove-btn').addEventListener('click', () => {
+                        div.remove();
+                        calculateAll();
+                    });
+                };
+
+                addMaterialRow();
+                addTaskRow();
+
+                addMaterialBtn.addEventListener('click', addMaterialRow);
+                addTaskBtn.addEventListener('click', addTaskRow);
+
+                const calculateAll = () => {
+                    const hourlyRate = parseFloat(document.getElementById('hourlyRate').value) || 0;
+                    const fixedCosts = parseFloat(document.getElementById('fixedCosts').value) || 0;
+                    const hoursWorked = parseFloat(document.getElementById('hoursWorked').value) || 0;
+                    const fixedCostPerHour = hoursWorked > 0 ? fixedCosts / hoursWorked : 0;
+                    document.getElementById('fixedCostPerHour').textContent = formatCurrency(fixedCostPerHour);
+
+                    let materialsSubtotal = 0;
+                    document.querySelectorAll('.material-row').forEach(row => {
+                        const price = parseFloat(row.querySelector('.material-price').value) || 0;
+                        const quantity = parseFloat(row.querySelector('.material-quantity').value) || 0;
+                        materialsSubtotal += price * quantity;
+                    });
+                    document.getElementById('materialsSubtotal').textContent = formatCurrency(materialsSubtotal);
+
+                    let totalMinutes = 0;
+                    document.querySelectorAll('.task-row').forEach(row => {
+                        totalMinutes += parseFloat(row.querySelector('.task-time').value) || 0;
+                    });
+                    const totalHours = totalMinutes / 60;
+                    document.getElementById('totalTime').textContent = `${totalMinutes} min`;
+                    const laborCost = totalHours * hourlyRate;
+
+                    const pieceFixedCost = totalHours * fixedCostPerHour;
+                    const productionCost = materialsSubtotal + laborCost + pieceFixedCost;
+                    document.getElementById('summaryMaterials').textContent = formatCurrency(materialsSubtotal);
+                    document.getElementById('summaryLabor').textContent = formatCurrency(laborCost);
+                    document.getElementById('summaryFixed').textContent = formatCurrency(pieceFixedCost);
+                    document.getElementById('productionCost').textContent = formatCurrency(productionCost);
+
+                    const profitMargin = parseFloat(document.getElementById('profitMargin').value) || 0;
+                    const fees = parseFloat(document.getElementById('fees').value) || 0;
+                    
+                    const basePrice = productionCost * (1 + profitMargin / 100);
+                    const finalPrice = fees > 0 && fees < 100 ? basePrice / (1 - fees / 100) : basePrice;
+                    const feeValue = finalPrice * (fees / 100);
+                    const netProfit = finalPrice - feeValue - productionCost;
+
+                    document.getElementById('finalPrice').textContent = formatCurrency(finalPrice);
+                    document.getElementById('netProfit').textContent = formatCurrency(netProfit);
+                };
+
+                inputs.forEach(input => input.addEventListener('input', calculateAll));
+                document.body.addEventListener('input', (e) => {
+                    if (e.target.matches('.material-row input') || e.target.matches('.task-row input')) {
+                        calculateAll();
+                    }
+                });
+
+                calculateAll();
+                
+                const generateDescriptionBtn = document.getElementById('generateDescription');
+                const generateSuggestionsBtn = document.getElementById('generateSuggestions');
+                const descriptionLoader = document.getElementById('descriptionLoader');
+                const descriptionResult = document.getElementById('descriptionResult');
+                const suggestionsLoader = document.getElementById('suggestionsLoader');
+                const suggestionsResult = document.getElementById('suggestionsResult');
+
+                generateDescriptionBtn.addEventListener('click', async () => {
+                    const pieceName = document.getElementById('pieceName').value || "uma peça de artesanato";
+                    const materials = Array.from(document.querySelectorAll('.material-name')).map(input => input.value).filter(Boolean);
+                    const finalPrice = document.getElementById('finalPrice').textContent;
+
+                    if (materials.length === 0) {
+                        descriptionResult.textContent = "Por favor, adicione pelo menos um material para gerar a descrição.";
+                        return;
+                    }
+
+                    const prompt = `Crie uma descrição de venda cativante e calorosa para um(a) "${pieceName}". A peça foi feita com os seguintes materiais: ${materials.join(', ')}. O preço de venda é ${finalPrice}. A descrição deve ser ideal para um post no Instagram, destacando o cuidado artesanal, a qualidade e o valor do produto. Use emojis para deixar o texto mais atraente.`;
+                    
+                    descriptionLoader.classList.remove('hidden');
+                    descriptionResult.textContent = '';
+                    const resultText = await callAIAssistant(prompt);
+                    descriptionResult.textContent = resultText;
+                    descriptionLoader.classList.add('hidden');
+                });
+
+                generateSuggestionsBtn.addEventListener('click', async () => {
+                    const pieceName = document.getElementById('pieceName').value || "uma peça de artesanato";
+                    const materials = Array.from(document.querySelectorAll('.material-name')).map(input => input.value).filter(Boolean);
+                    const totalTime = document.getElementById('totalTime').textContent;
+                    const finalPrice = document.getElementById('finalPrice').textContent;
+
+                    if (materials.length === 0) {
+                        suggestionsResult.textContent = "Por favor, adicione os detalhes da peça para gerar sugestões.";
+                        return;
+                    }
+
+                    const prompt = `Sou uma artesã e criei um(a) "${pieceName}" com estes materiais: ${materials.join(', ')}. Levei ${totalTime} para fazer e o preço de venda é ${finalPrice}. Me dê 3 ideias criativas e práticas para vender melhor este produto. As ideias podem incluir: para quem vender (público-alvo), como apresentar o produto de forma diferente, ou que outros produtos poderiam formar um kit com ele para aumentar o valor da venda. Formate a resposta com títulos para cada ideia.`;
+                    
+                    suggestionsLoader.classList.remove('hidden');
+                    suggestionsResult.textContent = '';
+                    const resultText = await callAIAssistant(prompt);
+                    suggestionsResult.textContent = resultText;
+                    suggestionsLoader.classList.add('hidden');
+                });
+            }
+
+            setupCalculator();
+        }
+
+        initializeAppAndAuth();
     </script>
 </body>
 </html>

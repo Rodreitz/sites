@@ -70,6 +70,20 @@
         body.loading {
             display: none;
         }
+        /* Estilo para prefixo de input */
+        .input-prefix {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            padding-left: 0.75rem;
+            color: #6b7280;
+        }
+        .input-group input {
+            padding-left: 2.5rem;
+        }
     </style>
 </head>
 <body class="bg-brand-bg/50 text-brand-text loading">
@@ -88,7 +102,7 @@
         </header>
 
         <main class="space-y-8">
-            <!-- Seções da calculadora... -->
+            <!-- Seção 1: Dados do Seu Ateliê -->
             <section class="bg-white p-6 rounded-2xl shadow-lg shadow-brand-olive/20">
                 <h2 class="font-display text-2xl text-brand-text mb-4 flex items-center">
                     <span class="text-3xl mr-3">1.</span> Dados do Seu Ateliê 
@@ -96,21 +110,21 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div>
                         <label for="hourlyRate" class="block text-sm font-medium text-brand-text">Valor da sua Hora de Trabalho</label>
-                        <div class="input-group mt-1">
+                        <div class="relative mt-1 input-group">
                             <span class="input-prefix">R$</span>
-                            <input type="number" id="hourlyRate" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" placeholder="20.00">
+                            <input type="text" inputmode="decimal" id="hourlyRate" class="numeric-input w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" placeholder="20.00">
                         </div>
                     </div>
                     <div>
                         <label for="fixedCosts" class="block text-sm font-medium text-brand-text">Custos Fixos Mensais</label>
-                        <div class="input-group mt-1">
-                            <span class="input-prefix">R$</span>
-                            <input type="number" id="fixedCosts" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" placeholder="300.00">
+                        <div class="relative mt-1 input-group">
+                             <span class="input-prefix">R$</span>
+                            <input type="text" inputmode="decimal" id="fixedCosts" class="numeric-input w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" placeholder="300.00">
                         </div>
                     </div>
                     <div>
                         <label for="hoursWorked" class="block text-sm font-medium text-brand-text">Horas Trabalhadas por Mês</label>
-                        <input type="number" id="hoursWorked" class="w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" placeholder="80">
+                        <input type="text" inputmode="decimal" id="hoursWorked" class="numeric-input w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" placeholder="80">
                     </div>
                 </div>
                  <div class="mt-4 bg-brand-bg p-3 rounded-lg text-center">
@@ -118,6 +132,8 @@
                     <p id="fixedCostPerHour" class="text-lg font-bold text-brand-text">R$ 0,00</p>
                 </div>
             </section>
+
+            <!-- Seção 2: Custos da Peça -->
             <section class="bg-white p-6 rounded-2xl shadow-lg shadow-brand-olive/20">
                 <h2 class="font-display text-2xl text-brand-text mb-4 flex items-center">
                     <span class="text-3xl mr-3">2.</span> Custos da Peça
@@ -127,20 +143,22 @@
                     <input type="text" id="pieceName" class="w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" placeholder="Jogo Americano Floral">
                 </div>
                 <h3 class="font-display text-lg font-semibold text-brand-text mt-6 mb-2">A. Custo dos Materiais</h3>
-                <div id="materialsContainer" class="space-y-2"></div>
-                <button id="addMaterial" class="mt-3 text-sm text-brand-primary hover:text-brand-text font-medium">+ Adicionar Material</button>
+                <div id="materialsContainer" class="space-y-4"></div>
+                <button id="addMaterial" class="mt-4 text-sm text-brand-primary hover:text-brand-text font-medium">+ Adicionar Material</button>
                 <div class="mt-4 text-right bg-gray-50 p-2 rounded-md">
                     <span class="font-medium text-gray-600">Subtotal de Materiais:</span>
                     <span id="materialsSubtotal" class="font-bold text-gray-800 ml-2">R$ 0,00</span>
                 </div>
                 <h3 class="font-display text-lg font-semibold text-brand-text mt-6 mb-2">B. Custo da Mão de Obra</h3>
-                <div id="tasksContainer" class="space-y-2"></div>
-                <button id="addTask" class="mt-3 text-sm text-brand-primary hover:text-brand-text font-medium">+ Adicionar Tarefa</button>
+                <div id="tasksContainer" class="space-y-4"></div>
+                <button id="addTask" class="mt-4 text-sm text-brand-primary hover:text-brand-text font-medium">+ Adicionar Tarefa</button>
                 <div class="mt-4 text-right bg-gray-50 p-2 rounded-md">
                     <span class="font-medium text-gray-600">Tempo Total de Produção:</span>
                     <span id="totalTime" class="font-bold text-gray-800 ml-2">0 min</span>
                 </div>
             </section>
+
+            <!-- Seção 3: Resumo dos Custos -->
             <section class="bg-white p-6 rounded-2xl shadow-lg shadow-brand-olive/20">
                 <h2 class="font-display text-2xl text-brand-text mb-4 flex items-center">
                    <span class="text-3xl mr-3">3.</span> Resumo dos Custos
@@ -164,6 +182,8 @@
                     </div>
                 </div>
             </section>
+            
+            <!-- Seção 4: Preço Final de Venda -->
             <section class="bg-white p-6 rounded-2xl shadow-lg shadow-brand-olive/20">
                 <h2 class="font-display text-2xl text-brand-text mb-4 flex items-center">
                     <span class="text-3xl mr-3">4.</span> Preço Final de Venda
@@ -171,11 +191,11 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
                     <div>
                         <label for="profitMargin" class="block text-sm font-medium text-brand-text">Sua Margem de Lucro (%)</label>
-                        <input type="number" id="profitMargin" class="w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" placeholder="100">
+                        <input type="text" inputmode="decimal" id="profitMargin" class="numeric-input w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" placeholder="100">
                     </div>
                     <div>
                         <label for="fees" class="block text-sm font-medium text-brand-text">Taxas (Cartão, Marketplace, etc. em %)</label>
-                        <input type="number" id="fees" class="w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" placeholder="5">
+                        <input type="text" inputmode="decimal" id="fees" class="numeric-input w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" placeholder="5">
                     </div>
                 </div>
                 <div class="mt-6 space-y-4">
@@ -191,6 +211,8 @@
                     </div>
                 </div>
             </section>
+
+            <!-- Seção 5: Assistente de Vendas IA ✨ -->
             <section class="bg-white p-6 rounded-2xl shadow-lg shadow-brand-olive/20">
                 <h2 class="font-display text-2xl text-brand-text mb-4 flex items-center">
                    <span class="text-3xl mr-3">5.</span> Assistente de Vendas IA ✨
@@ -272,13 +294,14 @@
                 return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
             };
             
-            const callAIAssistant = async (prompt) => {
+            // ** ATUALIZADO: Agora envia um objeto de dados em vez de um prompt **
+            const callAIAssistant = async (dataPayload) => {
                 const proxyUrl = '/api/gemini-proxy'; 
                 try {
                     const response = await fetch(proxyUrl, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ prompt: prompt })
+                        body: JSON.stringify(dataPayload) // Envia o objeto de dados
                     });
                     if (!response.ok) {
                         throw new Error(`Erro na chamada do assistente: ${response.statusText}`);
@@ -292,25 +315,32 @@
             };
 
             function setupCalculator() {
-                const inputs = document.querySelectorAll('input[type="number"]');
                 const materialsContainer = document.getElementById('materialsContainer');
                 const tasksContainer = document.getElementById('tasksContainer');
                 const addMaterialBtn = document.getElementById('addMaterial');
                 const addTaskBtn = document.getElementById('addTask');
 
-                let materialId = 0;
-                let taskId = 0;
-
                 const addMaterialRow = () => {
-                    materialId++;
                     const div = document.createElement('div');
-                    div.classList.add('grid', 'grid-cols-1', 'md:grid-cols-4', 'gap-2', 'items-center', 'material-row');
+                    div.classList.add('relative', 'p-4', 'border', 'rounded-lg', 'space-y-2', 'pt-8', 'material-row');
                     div.innerHTML = `
-                        <input type="text" placeholder="Nome do Material" class="material-name w-full p-2 border border-gray-200 rounded-md text-sm md:col-span-2">
-                        <div class="input-group"><span class="input-prefix text-sm">R$</span><input type="number" placeholder="Preço (ex: 30.00)" class="material-price w-full p-2 border border-gray-200 rounded-md text-sm"></div>
-                        <div class="flex items-center">
-                            <input type="number" placeholder="Qtd. Usada" class="material-quantity w-full p-2 border border-gray-200 rounded-md text-sm">
-                            <button class="remove-btn text-red-500 hover:text-red-700 ml-2 p-1">&times;</button>
+                        <button class="remove-btn absolute top-2 right-2 text-red-400 hover:text-red-600 font-bold text-2xl">&times;</button>
+                        <div class="w-full">
+                            <label class="text-sm font-medium text-brand-text">Nome do Material</label>
+                            <input type="text" placeholder="Ex: Tecido Tricoline" class="material-name w-full p-2 mt-1 border border-gray-200 rounded-md text-sm">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-sm font-medium text-brand-text">Preço</label>
+                                <div class="relative mt-1 input-group">
+                                    <span class="input-prefix text-sm">R$</span>
+                                    <input type="text" inputmode="decimal" placeholder="30.00" class="numeric-input material-price w-full p-2 border border-gray-200 rounded-md text-sm">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="text-sm font-medium text-brand-text">Qtd. Usada</label>
+                                <input type="text" inputmode="decimal" placeholder="0.45" class="numeric-input material-quantity w-full p-2 mt-1 border border-gray-200 rounded-md text-sm">
+                            </div>
                         </div>
                     `;
                     materialsContainer.appendChild(div);
@@ -321,14 +351,17 @@
                 };
 
                 const addTaskRow = () => {
-                    taskId++;
                     const div = document.createElement('div');
-                    div.classList.add('grid', 'grid-cols-1', 'md:grid-cols-2', 'gap-2', 'items-center', 'task-row');
+                    div.classList.add('relative', 'p-4', 'border', 'rounded-lg', 'space-y-2', 'pt-8', 'task-row');
                     div.innerHTML = `
-                        <input type="text" placeholder="Nome da Tarefa" class="w-full p-2 border border-gray-200 rounded-md text-sm">
-                        <div class="flex items-center">
-                            <input type="number" placeholder="Tempo (minutos)" class="task-time w-full p-2 border border-gray-200 rounded-md text-sm">
-                            <button class="remove-btn text-red-500 hover:text-red-700 ml-2 p-1">&times;</button>
+                        <button class="remove-btn absolute top-2 right-2 text-red-400 hover:text-red-600 font-bold text-2xl">&times;</button>
+                        <div class="w-full">
+                            <label class="text-sm font-medium text-brand-text">Nome da Tarefa</label>
+                            <input type="text" placeholder="Ex: Cortar e Costurar" class="w-full p-2 mt-1 border border-gray-200 rounded-md text-sm">
+                        </div>
+                        <div>
+                            <label class="text-sm font-medium text-brand-text">Tempo (minutos)</label>
+                            <input type="text" inputmode="decimal" placeholder="40" class="numeric-input task-time w-full p-2 mt-1 border border-gray-200 rounded-md text-sm">
                         </div>
                     `;
                     tasksContainer.appendChild(div);
@@ -345,26 +378,26 @@
                 addTaskBtn.addEventListener('click', addTaskRow);
 
                 const calculateAll = () => {
-                    const hourlyRate = parseFloat(document.getElementById('hourlyRate').value) || 0;
-                    const fixedCosts = parseFloat(document.getElementById('fixedCosts').value) || 0;
-                    const hoursWorked = parseFloat(document.getElementById('hoursWorked').value) || 0;
+                    const hourlyRate = parseFloat(document.getElementById('hourlyRate').value.replace(',', '.')) || 0;
+                    const fixedCosts = parseFloat(document.getElementById('fixedCosts').value.replace(',', '.')) || 0;
+                    const hoursWorked = parseFloat(document.getElementById('hoursWorked').value.replace(',', '.')) || 0;
                     const fixedCostPerHour = hoursWorked > 0 ? fixedCosts / hoursWorked : 0;
                     document.getElementById('fixedCostPerHour').textContent = formatCurrency(fixedCostPerHour);
 
                     let materialsSubtotal = 0;
                     document.querySelectorAll('.material-row').forEach(row => {
-                        const price = parseFloat(row.querySelector('.material-price').value) || 0;
-                        const quantity = parseFloat(row.querySelector('.material-quantity').value) || 0;
+                        const price = parseFloat(row.querySelector('.material-price').value.replace(',', '.')) || 0;
+                        const quantity = parseFloat(row.querySelector('.material-quantity').value.replace(',', '.')) || 0;
                         materialsSubtotal += price * quantity;
                     });
                     document.getElementById('materialsSubtotal').textContent = formatCurrency(materialsSubtotal);
 
                     let totalMinutes = 0;
                     document.querySelectorAll('.task-row').forEach(row => {
-                        totalMinutes += parseFloat(row.querySelector('.task-time').value) || 0;
+                        totalMinutes += parseFloat(row.querySelector('.task-time').value.replace(',', '.')) || 0;
                     });
                     const totalHours = totalMinutes / 60;
-                    document.getElementById('totalTime').textContent = `${totalMinutes} min`;
+                    document.getElementById('totalTime').textContent = `${Math.round(totalMinutes)} min`;
                     const laborCost = totalHours * hourlyRate;
 
                     const pieceFixedCost = totalHours * fixedCostPerHour;
@@ -374,8 +407,8 @@
                     document.getElementById('summaryFixed').textContent = formatCurrency(pieceFixedCost);
                     document.getElementById('productionCost').textContent = formatCurrency(productionCost);
 
-                    const profitMargin = parseFloat(document.getElementById('profitMargin').value) || 0;
-                    const fees = parseFloat(document.getElementById('fees').value) || 0;
+                    const profitMargin = parseFloat(document.getElementById('profitMargin').value.replace(',', '.')) || 0;
+                    const fees = parseFloat(document.getElementById('fees').value.replace(',', '.')) || 0;
                     
                     const basePrice = productionCost * (1 + profitMargin / 100);
                     const finalPrice = fees > 0 && fees < 100 ? basePrice / (1 - fees / 100) : basePrice;
@@ -386,12 +419,32 @@
                     document.getElementById('netProfit').textContent = formatCurrency(netProfit);
                 };
 
-                inputs.forEach(input => input.addEventListener('input', calculateAll));
-                document.body.addEventListener('input', (e) => {
-                    if (e.target.matches('.material-row input') || e.target.matches('.task-row input')) {
+                function setNumericInputFilter(inputElement) {
+                    inputElement.addEventListener('input', function(e) {
+                        let value = e.target.value.replace(/[^0-9.,]/g, '').replace(/,/g, '.');
+                        const parts = value.split('.');
+                        if (parts.length > 2) {
+                            value = parts[0] + '.' + parts.slice(1).join('');
+                        }
+                        e.target.value = value;
                         calculateAll();
-                    }
+                    });
+                }
+                
+                document.querySelectorAll('.numeric-input').forEach(setNumericInputFilter);
+                
+                const observer = new MutationObserver((mutations) => {
+                    mutations.forEach((mutation) => {
+                        mutation.addedNodes.forEach((node) => {
+                            if (node.nodeType === 1) {
+                                node.querySelectorAll('.numeric-input').forEach(setNumericInputFilter);
+                            }
+                        });
+                    });
                 });
+
+                observer.observe(materialsContainer, { childList: true });
+                observer.observe(tasksContainer, { childList: true });
 
                 calculateAll();
                 
@@ -412,11 +465,17 @@
                         return;
                     }
 
-                    const prompt = `Crie uma descrição de venda cativante e calorosa para um(a) "${pieceName}". A peça foi feita com os seguintes materiais: ${materials.join(', ')}. O preço de venda é ${finalPrice}. A descrição deve ser ideal para um post no Instagram, destacando o cuidado artesanal, a qualidade e o valor do produto. Use emojis para deixar o texto mais atraente.`;
+                    // ** ATUALIZADO: Monta o objeto de dados **
+                    const dataPayload = {
+                        type: 'description',
+                        pieceName: pieceName,
+                        materials: materials,
+                        finalPrice: finalPrice
+                    };
                     
                     descriptionLoader.classList.remove('hidden');
                     descriptionResult.textContent = '';
-                    const resultText = await callAIAssistant(prompt);
+                    const resultText = await callAIAssistant(dataPayload);
                     descriptionResult.textContent = resultText;
                     descriptionLoader.classList.add('hidden');
                 });
@@ -432,11 +491,18 @@
                         return;
                     }
 
-                    const prompt = `Sou uma artesã e criei um(a) "${pieceName}" com estes materiais: ${materials.join(', ')}. Levei ${totalTime} para fazer e o preço de venda é ${finalPrice}. Me dê 3 ideias criativas e práticas para vender melhor este produto. As ideias podem incluir: para quem vender (público-alvo), como apresentar o produto de forma diferente, ou que outros produtos poderiam formar um kit com ele para aumentar o valor da venda. Formate a resposta com títulos para cada ideia.`;
+                    // ** ATUALIZADO: Monta o objeto de dados **
+                    const dataPayload = {
+                        type: 'suggestions',
+                        pieceName: pieceName,
+                        materials: materials,
+                        totalTime: totalTime,
+                        finalPrice: finalPrice
+                    };
                     
                     suggestionsLoader.classList.remove('hidden');
                     suggestionsResult.textContent = '';
-                    const resultText = await callAIAssistant(prompt);
+                    const resultText = await callAIAssistant(dataPayload);
                     suggestionsResult.textContent = resultText;
                     suggestionsLoader.classList.add('hidden');
                 });

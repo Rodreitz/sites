@@ -69,18 +69,16 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-        // ******************************************************
-        // COLE A CONFIGURAÇÃO DO SEU FIREBASE AQUI
-        // ******************************************************
+        // Your web app's Firebase configuration
         const firebaseConfig = {
-            apiKey: "SUA_API_KEY",
-            authDomain: "SEU_AUTH_DOMAIN",
-            projectId: "SEU_PROJECT_ID",
-            storageBucket: "SEU_STORAGE_BUCKET",
-            messagingSenderId: "SEU_MESSAGING_SENDER_ID",
-            appId: "SEU_APP_ID"
+            apiKey: "AIzaSyBNYILyUqohOzxzYRRR-HrbPo71q14TECw",
+            authDomain: "arttesdabel-calculadora.firebaseapp.com",
+            projectId: "arttesdabel-calculadora",
+            storageBucket: "arttesdabel-calculadora.firebasestorage.app",
+            messagingSenderId: "343625501018",
+            appId: "1:343625501018:web:6d2126d44656128dd50b63",
+            measurementId: "G-QPTEENELNK"
         };
-        // ******************************************************
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
@@ -95,7 +93,8 @@
         // Se o usuário já estiver logado, redireciona para a calculadora
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                window.location.href = './calculadora.html'; // Altere para o nome correto do seu arquivo da calculadora
+                // CORREÇÃO: Usar um caminho absoluto a partir da raiz do site.
+                window.location.href = '/calculadora.html'; 
             }
         });
 

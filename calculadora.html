@@ -84,6 +84,10 @@
         .input-group input {
             padding-left: 2.5rem;
         }
+        /* Animação para o status de "Salvo" */
+        .saved-status {
+            transition: opacity 0.5s ease-in-out;
+        }
     </style>
 </head>
 <body class="bg-brand-bg/50 text-brand-text loading">
@@ -104,27 +108,30 @@
         <main class="space-y-8">
             <!-- Seção 1: Dados do Seu Ateliê -->
             <section class="bg-white p-6 rounded-2xl shadow-lg shadow-brand-olive/20">
-                <h2 class="font-display text-2xl text-brand-text mb-4 flex items-center">
-                    <span class="text-3xl mr-3">1.</span> Dados do Seu Ateliê 
-                </h2>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="font-display text-2xl text-brand-text flex items-center">
+                        <span class="text-3xl mr-3">1.</span> Dados do Seu Ateliê 
+                    </h2>
+                    <span id="atelierDataStatus" class="saved-status text-sm font-medium text-brand-olive opacity-0">Salvo!</span>
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div>
                         <label for="hourlyRate" class="block text-sm font-medium text-brand-text">Valor da sua Hora de Trabalho</label>
                         <div class="relative mt-1 input-group">
                             <span class="input-prefix">R$</span>
-                            <input type="text" inputmode="decimal" id="hourlyRate" class="numeric-input w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" placeholder="20.00">
+                            <input type="text" inputmode="decimal" id="hourlyRate" class="atelier-input numeric-input w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" placeholder="20.00">
                         </div>
                     </div>
                     <div>
                         <label for="fixedCosts" class="block text-sm font-medium text-brand-text">Custos Fixos Mensais</label>
                         <div class="relative mt-1 input-group">
                              <span class="input-prefix">R$</span>
-                            <input type="text" inputmode="decimal" id="fixedCosts" class="numeric-input w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" placeholder="300.00">
+                            <input type="text" inputmode="decimal" id="fixedCosts" class="atelier-input numeric-input w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" placeholder="300.00">
                         </div>
                     </div>
                     <div>
                         <label for="hoursWorked" class="block text-sm font-medium text-brand-text">Horas Trabalhadas por Mês</label>
-                        <input type="text" inputmode="decimal" id="hoursWorked" class="numeric-input w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" placeholder="80">
+                        <input type="text" inputmode="decimal" id="hoursWorked" class="atelier-input numeric-input w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" placeholder="80">
                     </div>
                 </div>
                  <div class="mt-4 bg-brand-bg p-3 rounded-lg text-center">
@@ -251,6 +258,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         // Função para buscar a configuração do Firebase do backend
         async function getFirebaseConfig() {
@@ -274,11 +282,18 @@
 
             const app = initializeApp(firebaseConfig);
             const auth = getAuth(app);
+            const db = getFirestore(app); // Inicializa o Firestore
 
             const logoutButton = document.getElementById('logoutButton');
+            let currentUser = null;
+            let atelierDataRef = null;
+            let saveTimeout = null;
 
             onAuthStateChanged(auth, (user) => {
                 if (user) {
+                    currentUser = user;
+                    atelierDataRef = doc(db, "atelierData", currentUser.uid);
+                    loadAtelierData();
                     document.body.classList.remove('loading');
                 } else {
                     window.location.href = '/index.html'; 
@@ -289,19 +304,77 @@
                 signOut(auth).catch((error) => console.error("Erro ao sair:", error));
             });
 
+            // --- Lógica para Salvar e Carregar Dados do Ateliê ---
+            const atelierInputs = document.querySelectorAll('.atelier-input');
+            const statusIndicator = document.getElementById('atelierDataStatus');
+
+            async function loadAtelierData() {
+                if (!atelierDataRef) return;
+                try {
+                    const docSnap = await getDoc(atelierDataRef);
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        document.getElementById('hourlyRate').value = data.hourlyRate || '';
+                        document.getElementById('fixedCosts').value = data.fixedCosts || '';
+                        document.getElementById('hoursWorked').value = data.hoursWorked || '';
+                        calculateAll(); // Recalcula tudo com os dados carregados
+                    }
+                } catch (error) {
+                    console.error("Erro ao carregar dados do ateliê:", error);
+                }
+            }
+
+            function saveAtelierData() {
+                if (!atelierDataRef) return;
+
+                const data = {
+                    hourlyRate: document.getElementById('hourlyRate').value,
+                    fixedCosts: document.getElementById('fixedCosts').value,
+                    hoursWorked: document.getElementById('hoursWorked').value,
+                };
+
+                // Usa setDoc com merge para não sobrescrever outros campos no futuro
+                setDoc(atelierDataRef, data, { merge: true })
+                    .then(() => {
+                        statusIndicator.textContent = 'Salvo!';
+                        statusIndicator.classList.remove('text-red-500');
+                        statusIndicator.classList.add('text-brand-olive');
+                        statusIndicator.style.opacity = '1';
+                        setTimeout(() => {
+                           statusIndicator.style.opacity = '0';
+                        }, 2000);
+                    })
+                    .catch((error) => {
+                        console.error("Erro ao salvar dados:", error);
+                        statusIndicator.textContent = 'Erro!';
+                        statusIndicator.classList.add('text-red-500');
+                        statusIndicator.style.opacity = '1';
+                    });
+            }
+            
+            atelierInputs.forEach(input => {
+                input.addEventListener('input', () => {
+                    clearTimeout(saveTimeout); // Cancela o salvamento anterior se o usuário ainda estiver digitando
+                    statusIndicator.textContent = 'Salvando...';
+                    statusIndicator.style.opacity = '1';
+                    // Salva 1.5 segundos depois que o usuário para de digitar
+                    saveTimeout = setTimeout(saveAtelierData, 1500);
+                });
+            });
+
+
             // O resto do script da calculadora continua aqui...
             const formatCurrency = (value) => {
                 return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
             };
             
-            // ** ATUALIZADO: Agora envia um objeto de dados em vez de um prompt **
             const callAIAssistant = async (dataPayload) => {
                 const proxyUrl = '/api/gemini-proxy'; 
                 try {
                     const response = await fetch(proxyUrl, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(dataPayload) // Envia o objeto de dados
+                        body: JSON.stringify(dataPayload)
                     });
                     if (!response.ok) {
                         throw new Error(`Erro na chamada do assistente: ${response.statusText}`);
@@ -427,7 +500,10 @@
                             value = parts[0] + '.' + parts.slice(1).join('');
                         }
                         e.target.value = value;
-                        calculateAll();
+                        // O calculateAll já é chamado pelo evento de input dos .atelier-input
+                        if (!inputElement.classList.contains('atelier-input')) {
+                           calculateAll();
+                        }
                     });
                 }
                 
@@ -465,7 +541,6 @@
                         return;
                     }
 
-                    // ** ATUALIZADO: Monta o objeto de dados **
                     const dataPayload = {
                         type: 'description',
                         pieceName: pieceName,
@@ -491,7 +566,6 @@
                         return;
                     }
 
-                    // ** ATUALIZADO: Monta o objeto de dados **
                     const dataPayload = {
                         type: 'suggestions',
                         pieceName: pieceName,

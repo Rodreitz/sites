@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora F.L.O.R.A. de Preço Justo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+        }
+        .input-group {
+            position: relative;
+        }
+        .input-group .input-prefix {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            padding-left: 0.75rem;
+            color: #6b7280;
+        }
+        .input-group input {
+            padding-left: 2.5rem;
+        }
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 220px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -110px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+            font-family: 'Inter', sans-serif;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        /* Estilo para o spinner de carregamento */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #10b981;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-emerald-50/50 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-4xl">
+        
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl text-emerald-800">Calculadora F.L.O.R.A.</h1>
+            <p class="text-lg text-gray-600 mt-2">Calcule o preço justo do seu artesanato com confiança.</p>
+        </header>
+
+        <main class="space-y-8">
+            <!-- Seção 1: Dados do Seu Ateliê -->
+            <section class="bg-white p-6 rounded-2xl shadow-lg shadow-emerald-200/50">
+                <h2 class="text-2xl text-emerald-700 mb-4 flex items-center">
+                    <span class="text-3xl mr-3">1.</span> Dados do Seu Ateliê 
+                    <div class="tooltip ml-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
+                        <span class="tooltiptext">Preencha estes dados uma única vez. Eles são a base do seu negócio e só precisam ser alterados se seus custos mudarem.</span>
+                    </div>
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div>
+                        <label for="hourlyRate" class="block text-sm font-medium text-gray-700">Valor da sua Hora de Trabalho</label>
+                        <div class="input-group mt-1">
+                            <span class="input-prefix">R$</span>
+                            <input type="number" id="hourlyRate" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500" placeholder="20.00">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="fixedCosts" class="block text-sm font-medium text-gray-700">Custos Fixos Mensais</label>
+                        <div class="input-group mt-1">
+                            <span class="input-prefix">R$</span>
+                            <input type="number" id="fixedCosts" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500" placeholder="300.00">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="hoursWorked" class="block text-sm font-medium text-gray-700">Horas Trabalhadas por Mês</label>
+                        <input type="number" id="hoursWorked" class="w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500" placeholder="80">
+                    </div>
+                </div>
+                 <div class="mt-4 bg-emerald-50 p-3 rounded-lg text-center">
+                    <p class="text-sm text-emerald-700">Custo Fixo por Hora do Ateliê:</p>
+                    <p id="fixedCostPerHour" class="text-lg font-bold text-emerald-900">R$ 0,00</p>
+                </div>
+            </section>
+
+            <!-- Seção 2: Custos da Peça -->
+            <section class="bg-white p-6 rounded-2xl shadow-lg shadow-emerald-200/50">
+                <h2 class="text-2xl text-emerald-700 mb-4 flex items-center">
+                    <span class="text-3xl mr-3">2.</span> Custos da Peça
+                    <div class="tooltip ml-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
+                        <span class="tooltiptext">Preencha esta seção para cada nova peça que você criar. Adicione quantos materiais e etapas de tempo forem necessários.</span>
+                    </div>
+                </h2>
+                
+                <div>
+                    <label for="pieceName" class="block text-sm font-medium text-gray-700">Nome da Peça (Ex: Jogo Americano Floral)</label>
+                    <input type="text" id="pieceName" class="w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500" placeholder="Jogo Americano Floral">
+                </div>
+
+                <h3 class="text-lg font-semibold text-gray-800 mt-6 mb-2">A. Custo dos Materiais</h3>
+                <div id="materialsContainer" class="space-y-2">
+                    <!-- Linha de material será inserida aqui -->
+                </div>
+                <button id="addMaterial" class="mt-3 text-sm text-emerald-600 hover:text-emerald-800 font-medium">+ Adicionar Material</button>
+                <div class="mt-4 text-right bg-gray-50 p-2 rounded-md">
+                    <span class="font-medium text-gray-600">Subtotal de Materiais:</span>
+                    <span id="materialsSubtotal" class="font-bold text-gray-800 ml-2">R$ 0,00</span>
+                </div>
+
+                <h3 class="text-lg font-semibold text-gray-800 mt-6 mb-2">B. Custo da Mão de Obra</h3>
+                <div id="tasksContainer" class="space-y-2">
+                    <!-- Linha de tarefa será inserida aqui -->
+                </div>
+                <button id="addTask" class="mt-3 text-sm text-emerald-600 hover:text-emerald-800 font-medium">+ Adicionar Tarefa</button>
+                <div class="mt-4 text-right bg-gray-50 p-2 rounded-md">
+                    <span class="font-medium text-gray-600">Tempo Total de Produção:</span>
+                    <span id="totalTime" class="font-bold text-gray-800 ml-2">0 min</span>
+                </div>
+            </section>
+
+            <!-- Seção 3: Resumo dos Custos -->
+            <section class="bg-white p-6 rounded-2xl shadow-lg shadow-emerald-200/50">
+                <h2 class="text-2xl text-emerald-700 mb-4 flex items-center">
+                   <span class="text-3xl mr-3">3.</span> Resumo dos Custos
+                </h2>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-md">
+                        <span class="font-medium text-gray-600">Custo Total de Materiais</span>
+                        <span id="summaryMaterials" class="font-bold text-lg text-gray-800">R$ 0,00</span>
+                    </div>
+                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-md">
+                        <span class="font-medium text-gray-600">Custo Total da Mão de Obra</span>
+                        <span id="summaryLabor" class="font-bold text-lg text-gray-800">R$ 0,00</span>
+                    </div>
+                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-md">
+                        <span class="font-medium text-gray-600">Custo Fixo da Peça</span>
+                        <span id="summaryFixed" class="font-bold text-lg text-gray-800">R$ 0,00</span>
+                    </div>
+                    <div class="flex justify-between items-center bg-emerald-100 p-4 rounded-lg mt-2">
+                        <span class="font-bold text-emerald-800 text-lg">CUSTO DE PRODUÇÃO DA PEÇA</span>
+                        <span id="productionCost" class="font-extrabold text-2xl text-emerald-900">R$ 0,00</span>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Seção 4: Preço Final de Venda -->
+            <section class="bg-white p-6 rounded-2xl shadow-lg shadow-emerald-200/50">
+                <h2 class="text-2xl text-emerald-700 mb-4 flex items-center">
+                    <span class="text-3xl mr-3">4.</span> Preço Final de Venda
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
+                    <div>
+                        <label for="profitMargin" class="block text-sm font-medium text-gray-700">Sua Margem de Lucro (%)</label>
+                        <input type="number" id="profitMargin" class="w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500" placeholder="100">
+                    </div>
+                    <div>
+                        <label for="fees" class="block text-sm font-medium text-gray-700">Taxas (Cartão, Marketplace, etc. em %)</label>
+                        <input type="number" id="fees" class="w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500" placeholder="5">
+                    </div>
+                </div>
+                <div class="mt-6 space-y-4">
+                    <div class="bg-emerald-500 text-white p-6 rounded-2xl text-center">
+                        <p class="font-semibold text-lg opacity-90">PREÇO DE VENDA FINAL (SUGERIDO)</p>
+                        <p id="finalPrice" class="font-extrabold text-5xl tracking-tight">R$ 0,00</p>
+                    </div>
+                    <div class="bg-green-100 border-l-4 border-green-500 text-green-800 p-4 rounded-r-lg">
+                        <div class="flex justify-between items-center">
+                            <p class="font-bold text-lg">LUCRO LÍQUIDO POR PEÇA:</p>
+                            <p id="netProfit" class="font-bold text-2xl">R$ 0,00</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Seção 5: Assistente de Vendas IA ✨ -->
+            <section class="bg-white p-6 rounded-2xl shadow-lg shadow-emerald-200/50">
+                <h2 class="text-2xl text-emerald-700 mb-4 flex items-center">
+                   <span class="text-3xl mr-3">5.</span> Assistente de Vendas IA ✨
+                </h2>
+                <p class="text-gray-600 mb-6">Use a inteligência artificial para criar textos de venda e ter ideias para divulgar seu produto. Preencha os dados da peça acima e clique nos botões abaixo.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Descrição Mágica -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800">Descrição Mágica para Redes Sociais</h3>
+                        <button id="generateDescription" class="w-full mt-2 bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-emerald-700 transition-colors flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                            Gerar Descrição
+                        </button>
+                        <div id="descriptionLoader" class="loader hidden"></div>
+                        <div id="descriptionResult" class="mt-4 p-4 bg-gray-50 rounded-md text-gray-700 whitespace-pre-wrap min-h-[100px] border"></div>
+                    </div>
+                    <!-- Sugestões de Venda -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800">Ideias Criativas para Vender Mais</h3>
+                        <button id="generateSuggestions" class="w-full mt-2 bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-emerald-700 transition-colors flex items-center justify-center">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.121-3.536a1 1 0 011.414 0l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 010-1.414zM4.95 16.464l.707-.707a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414zm-3.536-2.121a1 1 0 010-1.414l.707-.707a1 1 0 011.414 1.414l-.707.707a1 1 0 01-1.414 0zM10 18a1 1 0 01-1-1v-1a1 1 0 112 0v1a1 1 0 01-1 1z" clip-rule="evenodd" /></svg>
+                            Gerar Ideias
+                        </button>
+                        <div id="suggestionsLoader" class="loader hidden"></div>
+                        <div id="suggestionsResult" class="mt-4 p-4 bg-gray-50 rounded-md text-gray-700 whitespace-pre-wrap min-h-[100px] border"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="text-center mt-12 text-sm text-gray-500">
+            <p>&copy; 2024 - Uma ferramenta do Método F.L.O.R.A.</p>
+        </footer>
+
+    </div>
+
+    <script>
+        // Função para formatar números como moeda brasileira (BRL)
+        const formatCurrency = (value) => {
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+        };
+        
+        // Função para chamar a API do Gemini com retentativa exponencial
+        const callGeminiAPI = async (prompt, maxRetries = 3) => {
+            let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+            const payload = { contents: chatHistory };
+            const apiKey = ""; // A chave será fornecida pelo ambiente
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        return result.candidates[0].content.parts[0].text;
+                    } else {
+                        throw new Error("Resposta da API inválida ou sem conteúdo.");
+                    }
+                } catch (error) {
+                    console.error(`Tentativa ${i + 1} falhou:`, error);
+                    if (i === maxRetries - 1) {
+                        return "Desculpe, não foi possível gerar a resposta no momento. Tente novamente mais tarde.";
+                    }
+                    // Espera exponencial (1s, 2s, 4s)
+                    await new Promise(res => setTimeout(res, Math.pow(2, i) * 1000));
+                }
+            }
+        };
+
+
+        // Função principal da calculadora
+        function setupCalculator() {
+            const inputs = document.querySelectorAll('input[type="number"]');
+            const materialsContainer = document.getElementById('materialsContainer');
+            const tasksContainer = document.getElementById('tasksContainer');
+            const addMaterialBtn = document.getElementById('addMaterial');
+            const addTaskBtn = document.getElementById('addTask');
+
+            let materialId = 0;
+            let taskId = 0;
+
+            const addMaterialRow = () => {
+                materialId++;
+                const div = document.createElement('div');
+                div.classList.add('grid', 'grid-cols-1', 'md:grid-cols-4', 'gap-2', 'items-center', 'material-row');
+                div.innerHTML = `
+                    <input type="text" placeholder="Nome do Material" class="material-name w-full p-2 border border-gray-200 rounded-md text-sm md:col-span-2">
+                    <div class="input-group"><span class="input-prefix text-sm">R$</span><input type="number" placeholder="Preço (ex: 30.00)" class="material-price w-full p-2 border border-gray-200 rounded-md text-sm"></div>
+                    <div class="flex items-center">
+                        <input type="number" placeholder="Qtd. Usada" class="material-quantity w-full p-2 border border-gray-200 rounded-md text-sm">
+                        <button class="remove-btn text-red-500 hover:text-red-700 ml-2 p-1">&times;</button>
+                    </div>
+                `;
+                materialsContainer.appendChild(div);
+                div.querySelector('.remove-btn').addEventListener('click', () => {
+                    div.remove();
+                    calculateAll();
+                });
+            };
+
+            const addTaskRow = () => {
+                taskId++;
+                const div = document.createElement('div');
+                div.classList.add('grid', 'grid-cols-1', 'md:grid-cols-2', 'gap-2', 'items-center', 'task-row');
+                div.innerHTML = `
+                    <input type="text" placeholder="Nome da Tarefa" class="w-full p-2 border border-gray-200 rounded-md text-sm">
+                    <div class="flex items-center">
+                        <input type="number" placeholder="Tempo (minutos)" class="task-time w-full p-2 border border-gray-200 rounded-md text-sm">
+                        <button class="remove-btn text-red-500 hover:text-red-700 ml-2 p-1">&times;</button>
+                    </div>
+                `;
+                tasksContainer.appendChild(div);
+                div.querySelector('.remove-btn').addEventListener('click', () => {
+                    div.remove();
+                    calculateAll();
+                });
+            };
+
+            addMaterialRow();
+            addTaskRow();
+
+            addMaterialBtn.addEventListener('click', addMaterialRow);
+            addTaskBtn.addEventListener('click', addTaskRow);
+
+            const calculateAll = () => {
+                const hourlyRate = parseFloat(document.getElementById('hourlyRate').value) || 0;
+                const fixedCosts = parseFloat(document.getElementById('fixedCosts').value) || 0;
+                const hoursWorked = parseFloat(document.getElementById('hoursWorked').value) || 0;
+                const fixedCostPerHour = hoursWorked > 0 ? fixedCosts / hoursWorked : 0;
+                document.getElementById('fixedCostPerHour').textContent = formatCurrency(fixedCostPerHour);
+
+                let materialsSubtotal = 0;
+                document.querySelectorAll('.material-row').forEach(row => {
+                    const price = parseFloat(row.querySelector('.material-price').value) || 0;
+                    const quantity = parseFloat(row.querySelector('.material-quantity').value) || 0;
+                    materialsSubtotal += price * quantity;
+                });
+                document.getElementById('materialsSubtotal').textContent = formatCurrency(materialsSubtotal);
+
+                let totalMinutes = 0;
+                document.querySelectorAll('.task-row').forEach(row => {
+                    totalMinutes += parseFloat(row.querySelector('.task-time').value) || 0;
+                });
+                const totalHours = totalMinutes / 60;
+                document.getElementById('totalTime').textContent = `${totalMinutes} min`;
+                const laborCost = totalHours * hourlyRate;
+
+                const pieceFixedCost = totalHours * fixedCostPerHour;
+                const productionCost = materialsSubtotal + laborCost + pieceFixedCost;
+                document.getElementById('summaryMaterials').textContent = formatCurrency(materialsSubtotal);
+                document.getElementById('summaryLabor').textContent = formatCurrency(laborCost);
+                document.getElementById('summaryFixed').textContent = formatCurrency(pieceFixedCost);
+                document.getElementById('productionCost').textContent = formatCurrency(productionCost);
+
+                const profitMargin = parseFloat(document.getElementById('profitMargin').value) || 0;
+                const fees = parseFloat(document.getElementById('fees').value) || 0;
+                
+                const basePrice = productionCost * (1 + profitMargin / 100);
+                const finalPrice = fees > 0 && fees < 100 ? basePrice / (1 - fees / 100) : basePrice;
+                const feeValue = finalPrice * (fees / 100);
+                const netProfit = finalPrice - feeValue - productionCost;
+
+                document.getElementById('finalPrice').textContent = formatCurrency(finalPrice);
+                document.getElementById('netProfit').textContent = formatCurrency(netProfit);
+            };
+
+            inputs.forEach(input => input.addEventListener('input', calculateAll));
+            document.body.addEventListener('input', (e) => {
+                if (e.target.matches('.material-row input') || e.target.matches('.task-row input')) {
+                    calculateAll();
+                }
+            });
+
+            calculateAll();
+            
+            // --- Funcionalidades da IA ---
+            const generateDescriptionBtn = document.getElementById('generateDescription');
+            const generateSuggestionsBtn = document.getElementById('generateSuggestions');
+            const descriptionLoader = document.getElementById('descriptionLoader');
+            const descriptionResult = document.getElementById('descriptionResult');
+            const suggestionsLoader = document.getElementById('suggestionsLoader');
+            const suggestionsResult = document.getElementById('suggestionsResult');
+
+            generateDescriptionBtn.addEventListener('click', async () => {
+                const pieceName = document.getElementById('pieceName').value || "uma peça de artesanato";
+                const materials = Array.from(document.querySelectorAll('.material-name')).map(input => input.value).filter(Boolean);
+                const finalPrice = document.getElementById('finalPrice').textContent;
+
+                if (materials.length === 0) {
+                    descriptionResult.textContent = "Por favor, adicione pelo menos um material para gerar a descrição.";
+                    return;
+                }
+
+                const prompt = `Crie uma descrição de venda cativante e calorosa para um(a) "${pieceName}". A peça foi feita com os seguintes materiais: ${materials.join(', ')}. O preço de venda é ${finalPrice}. A descrição deve ser ideal para um post no Instagram, destacando o cuidado artesanal, a qualidade e o valor do produto. Use emojis para deixar o texto mais atraente.`;
+                
+                descriptionLoader.classList.remove('hidden');
+                descriptionResult.textContent = '';
+                const resultText = await callGeminiAPI(prompt);
+                descriptionResult.textContent = resultText;
+                descriptionLoader.classList.add('hidden');
+            });
+
+            generateSuggestionsBtn.addEventListener('click', async () => {
+                const pieceName = document.getElementById('pieceName').value || "uma peça de artesanato";
+                const materials = Array.from(document.querySelectorAll('.material-name')).map(input => input.value).filter(Boolean);
+                const totalTime = document.getElementById('totalTime').textContent;
+                const finalPrice = document.getElementById('finalPrice').textContent;
+
+                if (materials.length === 0) {
+                    suggestionsResult.textContent = "Por favor, adicione os detalhes da peça para gerar sugestões.";
+                    return;
+                }
+
+                const prompt = `Sou uma artesã e criei um(a) "${pieceName}" com estes materiais: ${materials.join(', ')}. Levei ${totalTime} para fazer e o preço de venda é ${finalPrice}. Me dê 3 ideias criativas e práticas para vender melhor este produto. As ideias podem incluir: para quem vender (público-alvo), como apresentar o produto de forma diferente, ou que outros produtos poderiam formar um kit com ele para aumentar o valor da venda. Formate a resposta com títulos para cada ideia.`;
+                
+                suggestionsLoader.classList.remove('hidden');
+                suggestionsResult.textContent = '';
+                const resultText = await callGeminiAPI(prompt);
+                suggestionsResult.textContent = resultText;
+                suggestionsLoader.classList.add('hidden');
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', setupCalculator);
+    </script>
+</body>
+</html>

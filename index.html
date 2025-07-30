@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Arttes da Bel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'brand-bg': '#F3E4D7',
+                        'brand-text': '#786D4E',
+                        'brand-olive': '#A5A184',
+                        'brand-pink': '#F39B92',
+                        'brand-primary': '#DA7E55',
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'sans-serif'],
+                        'display': ['Montserrat', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-brand-bg/50 text-brand-text flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-md">
+        <header class="text-center mb-8">
+            <img src="https://raw.githubusercontent.com/Rodreitz/sites/adab42e1b226613b95b484f00337e8c1903b186b/LOGO%20COM%20NOME%20transparente.png" alt="Logo Arttes da Bel" class="mx-auto w-48 h-auto mb-4">
+            <h1 class="font-display text-3xl text-brand-primary">Área Exclusiva</h1>
+            <p class="text-brand-text">Acesse a calculadora e outras ferramentas.</p>
+        </header>
+
+        <main class="bg-white p-8 rounded-2xl shadow-lg shadow-brand-olive/20">
+            <form id="authForm" class="space-y-6">
+                <div>
+                    <label for="email" class="block text-sm font-medium text-brand-text">Email</label>
+                    <input type="email" id="email" name="email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-brand-primary focus:border-brand-primary">
+                </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-brand-text">Senha</label>
+                    <input type="password" id="password" name="password" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-brand-primary focus:border-brand-primary">
+                </div>
+
+                <!-- Mensagens de erro aparecerão aqui -->
+                <div id="errorMessage" class="hidden p-3 bg-red-100 text-red-700 rounded-md text-sm"></div>
+
+                <div class="flex flex-col gap-4">
+                    <button type="submit" id="loginButton" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-brand-primary hover:bg-brand-text focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary font-semibold">Entrar</button>
+                    <button type="submit" id="registerButton" class="w-full flex justify-center py-2 px-4 border border-brand-olive text-brand-text bg-transparent hover:bg-brand-bg rounded-md shadow-sm font-semibold">Cadastrar</button>
+                </div>
+            </form>
+        </main>
+        
+        <footer class="text-center mt-8 text-sm text-gray-500">
+            <p>&copy; 2024 - Arttes da Bel</p>
+        </footer>
+    </div>
+
+    <!-- Importe os scripts do Firebase aqui -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        // ******************************************************
+        // COLE A CONFIGURAÇÃO DO SEU FIREBASE AQUI
+        // ******************************************************
+        const firebaseConfig = {
+            apiKey: "SUA_API_KEY",
+            authDomain: "SEU_AUTH_DOMAIN",
+            projectId: "SEU_PROJECT_ID",
+            storageBucket: "SEU_STORAGE_BUCKET",
+            messagingSenderId: "SEU_MESSAGING_SENDER_ID",
+            appId: "SEU_APP_ID"
+        };
+        // ******************************************************
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const loginButton = document.getElementById('loginButton');
+        const registerButton = document.getElementById('registerButton');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const errorMessageDiv = document.getElementById('errorMessage');
+
+        // Se o usuário já estiver logado, redireciona para a calculadora
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                window.location.href = './calculadora.html'; // Altere para o nome correto do seu arquivo da calculadora
+            }
+        });
+
+        // Função para mostrar erros
+        function showAuthError(message) {
+            errorMessageDiv.textContent = message;
+            errorMessageDiv.classList.remove('hidden');
+        }
+
+        // Evento de Login
+        loginButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            const email = emailInput.value;
+            const password = passwordInput.value;
+
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    // O redirecionamento será feito pelo onAuthStateChanged
+                })
+                .catch((error) => {
+                    let message = "Ocorreu um erro ao tentar entrar. Verifique seus dados.";
+                    if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+                        message = "Email ou senha inválidos. Tente novamente.";
+                    }
+                    showAuthError(message);
+                });
+        });
+
+        // Evento de Cadastro
+        registerButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            const email = emailInput.value;
+            const password = passwordInput.value;
+
+            if (password.length < 6) {
+                showAuthError("A senha deve ter pelo menos 6 caracteres.");
+                return;
+            }
+
+            createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    // O redirecionamento será feito pelo onAuthStateChanged
+                    alert("Cadastro realizado com sucesso! Você será redirecionada.");
+                })
+                .catch((error) => {
+                    let message = "Ocorreu um erro ao tentar cadastrar.";
+                    if (error.code === 'auth/email-already-in-use') {
+                        message = "Este email já está cadastrado. Tente fazer o login.";
+                    } else if (error.code === 'auth/invalid-email') {
+                        message = "O formato do email é inválido.";
+                    }
+                    showAuthError(message);
+                });
+        });
+
+    </script>
+</body>
+</html>

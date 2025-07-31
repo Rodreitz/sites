@@ -63,7 +63,7 @@
                                 <input type="password" id="loginPassword" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-brand-primary focus:border-brand-primary">
                             </div>
                             <div id="loginErrorMessage" class="hidden p-3 bg-red-100 text-red-700 rounded-md text-sm"></div>
-                            <button type="submit" id="loginButton" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-brand-primary hover:bg-brand-text focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary font-semibold">Entrar</button>
+                            <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-brand-primary hover:bg-brand-text focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary font-semibold">Entrar</button>
                         </form>
                         <p class="text-center text-sm mt-6">
                             Não tem uma conta? <a href="#" id="showRegisterViewLink" class="font-medium text-brand-primary hover:underline">Cadastre-se</a>
@@ -99,7 +99,7 @@
                                 <input type="password" id="registerPassword" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-brand-primary focus:border-brand-primary">
                             </div>
                             <div id="registerErrorMessage" class="hidden p-3 bg-red-100 text-red-700 rounded-md text-sm"></div>
-                            <button type="submit" id="registerButton" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-brand-primary hover:bg-brand-text focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary font-semibold">Criar Conta</button>
+                            <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-brand-primary hover:bg-brand-text focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary font-semibold">Criar Conta</button>
                         </form>
                          <p class="text-center text-sm mt-6">
                             Já tem uma conta? <a href="#" id="showLoginViewLink" class="font-medium text-brand-primary hover:underline">Faça o login</a>
@@ -321,7 +321,7 @@
     <template id="settings-template">
         <div id="settingsView">
             <h1 class="font-display text-3xl text-brand-text mb-8">Configurações</h1>
-            <div class="space-y-8">
+            <div class="space-y-8 max-w-2xl mx-auto">
                 <section class="bg-white p-6 rounded-2xl shadow-lg shadow-brand-olive/20">
                     <h2 class="font-display text-2xl text-brand-text mb-4">Meu Perfil</h2>
                     <div class="space-y-4">
@@ -428,7 +428,7 @@
                     piecesCollectionRef = collection(db, "atelierData", currentUser.uid, "pieces");
                     authContainer.classList.add('hidden');
                     appView.classList.remove('hidden');
-                    loadUserData();
+                    loadUserDataAndNavigate();
                 } else {
                     currentUser = null;
                     atelierDataRef = null;
@@ -438,25 +438,21 @@
                 }
             });
 
-            // Lógica de Autenticação e Troca de Tela
             const loginView = document.getElementById('loginView');
             const registerView = document.getElementById('registerView');
-            const showRegisterViewLink = document.getElementById('showRegisterViewLink');
-            const showLoginViewLink = document.getElementById('showLoginViewLink');
-
-            showRegisterViewLink.addEventListener('click', (e) => {
+            document.getElementById('showRegisterViewLink').addEventListener('click', (e) => {
                 e.preventDefault();
                 loginView.classList.add('hidden');
                 registerView.classList.remove('hidden');
             });
 
-            showLoginViewLink.addEventListener('click', (e) => {
+            document.getElementById('showLoginViewLink').addEventListener('click', (e) => {
                 e.preventDefault();
                 registerView.classList.add('hidden');
                 loginView.classList.remove('hidden');
             });
             
-            document.getElementById('loginButton').addEventListener('click', (e) => {
+            document.getElementById('loginForm').addEventListener('submit', (e) => {
                 e.preventDefault();
                 const email = document.getElementById('loginEmail').value;
                 const password = document.getElementById('loginPassword').value;
@@ -467,7 +463,7 @@
                     });
             });
 
-            document.getElementById('registerButton').addEventListener('click', (e) => {
+            document.getElementById('registerForm').addEventListener('submit', (e) => {
                 e.preventDefault();
                 const name = document.getElementById('registerName').value;
                 const email = document.getElementById('registerEmail').value;
@@ -500,93 +496,28 @@
             document.getElementById('logoutButton').addEventListener('click', () => {
                 signOut(auth).catch((error) => console.error("Erro ao sair:", error));
             });
-
-            const settingsInputs = document.querySelectorAll('.settings-input');
-            const statusIndicator = document.getElementById('settingsStatus');
-            let saveTimeout = null;
-
-            async function loadUserData() {
+            
+            async function loadUserDataAndNavigate() {
                 if (!atelierDataRef) return;
                 try {
                     const docSnap = await getDoc(atelierDataRef);
                     if (docSnap.exists()) {
                         const data = docSnap.data();
-                        document.getElementById('settingsHourlyRate').value = data.hourlyRate || '';
-                        document.getElementById('settingsFixedCosts').value = data.fixedCosts || '';
-                        document.getElementById('settingsHoursWorked').value = data.hoursWorked || '';
-                        document.getElementById('profileName').value = currentUser.displayName || '';
-                        document.getElementById('profileEmail').value = currentUser.email || '';
-                        document.getElementById('welcomeMessage').textContent = `Bem-vinda, ${currentUser.displayName || 'Artesã'}!`;
                         if (!data.hasLoggedInBefore) {
                             document.getElementById('welcomeModal').classList.remove('hidden');
                         }
-                        checkAndRestorePiece();
                     } else {
                         document.getElementById('welcomeModal').classList.remove('hidden');
                     }
+                    navigate(window.location.hash || '#dashboard');
                 } catch (error) {
-                    console.error("Erro ao carregar dados do ateliê:", error);
+                    console.error("Erro ao carregar dados do usuário:", error);
                 }
             }
 
-            function saveAtelierData(isFirstSave = false) {
-                if (!atelierDataRef) return;
-                const data = {
-                    hourlyRate: document.getElementById('settingsHourlyRate').value,
-                    fixedCosts: document.getElementById('settingsFixedCosts').value,
-                    hoursWorked: document.getElementById('settingsHoursWorked').value,
-                };
-                if (isFirstSave) {
-                    data.hasLoggedInBefore = true;
-                }
-                setDoc(atelierDataRef, data, { merge: true })
-                    .then(() => {
-                        statusIndicator.querySelector('span').textContent = 'Salvo na nuvem!';
-                        statusIndicator.classList.remove('text-yellow-600');
-                        statusIndicator.classList.add('text-brand-olive');
-                        statusIndicator.style.opacity = '1';
-                        setTimeout(() => { statusIndicator.style.opacity = '0'; }, 2000);
-                    })
-                    .catch((error) => {
-                        console.error("Erro ao salvar dados:", error);
-                        statusIndicator.querySelector('span').textContent = 'Erro ao salvar!';
-                        statusIndicator.classList.add('text-red-500');
-                        statusIndicator.style.opacity = '1';
-                    });
-            }
-            
-            settingsInputs.forEach(input => {
-                input.addEventListener('input', () => {
-                    clearTimeout(saveTimeout);
-                    statusIndicator.querySelector('span').textContent = 'Salvando...';
-                    statusIndicator.classList.remove('text-brand-olive');
-                    statusIndicator.classList.add('text-yellow-600');
-                    statusIndicator.style.opacity = '1';
-                    saveTimeout = setTimeout(() => saveAtelierData(), 1500);
-                });
-            });
-            
-            document.getElementById('saveProfileButton').addEventListener('click', async () => {
-                const newName = document.getElementById('profileName').value;
-                if (!newName) {
-                    alert('O nome não pode ficar em branco.');
-                    return;
-                }
-                try {
-                    await updateProfile(currentUser, { displayName: newName });
-                    await setDoc(atelierDataRef, { name: newName }, { merge: true });
-                    document.getElementById('welcomeMessage').textContent = `Bem-vinda, ${newName}!`;
-                    alert('Perfil atualizado com sucesso!');
-                } catch (error) {
-                    console.error("Erro ao atualizar perfil:", error);
-                    alert('Ocorreu um erro ao atualizar seu perfil.');
-                }
-            });
-
-            const welcomeModal = document.getElementById('welcomeModal');
             document.getElementById('closeWelcomeModal').addEventListener('click', () => {
-                welcomeModal.classList.add('hidden');
-                saveAtelierData(true);
+                document.getElementById('welcomeModal').classList.add('hidden');
+                setDoc(atelierDataRef, { hasLoggedInBefore: true }, { merge: true });
                 navigate('#settings');
             });
 
@@ -604,11 +535,12 @@
                 }
             };
             
-            function setupCalculator() {
-                const materialsContainer = document.getElementById('materialsContainer');
-                const tasksContainer = document.getElementById('tasksContainer');
-                const addMaterialBtn = document.getElementById('addMaterial');
-                const addTaskBtn = document.getElementById('addTask');
+            function setupCalculator(atelierData) {
+                const calculatorNode = document.getElementById('calculatorView');
+                const materialsContainer = calculatorNode.querySelector('#materialsContainer');
+                const tasksContainer = calculatorNode.querySelector('#tasksContainer');
+                const addMaterialBtn = calculatorNode.querySelector('#addMaterial');
+                const addTaskBtn = calculatorNode.querySelector('#addTask');
 
                 const addMaterialRow = (name = '', price = '', quantity = '') => {
                     const div = document.createElement('div');
@@ -639,45 +571,45 @@
                 addTaskBtn.addEventListener('click', () => addTaskRow());
 
                 const calculateAll = () => {
-                    const hourlyRate = parseFloat(document.getElementById('settingsHourlyRate').value.replace(',', '.')) || 0;
-                    const fixedCosts = parseFloat(document.getElementById('settingsFixedCosts').value.replace(',', '.')) || 0;
-                    const hoursWorked = parseFloat(document.getElementById('settingsHoursWorked').value.replace(',', '.')) || 0;
+                    const hourlyRate = parseFloat(atelierData.hourlyRate.replace(',', '.')) || 0;
+                    const fixedCosts = parseFloat(atelierData.fixedCosts.replace(',', '.')) || 0;
+                    const hoursWorked = parseFloat(atelierData.hoursWorked.replace(',', '.')) || 0;
                     const fixedCostPerHour = hoursWorked > 0 ? fixedCosts / hoursWorked : 0;
-                    document.getElementById('fixedCostPerHour').textContent = formatCurrency(fixedCostPerHour);
+                    calculatorNode.querySelector('#fixedCostPerHour').textContent = formatCurrency(fixedCostPerHour);
 
                     let materialsSubtotal = 0;
-                    document.querySelectorAll('.material-row').forEach(row => {
+                    calculatorNode.querySelectorAll('.material-row').forEach(row => {
                         const price = parseFloat(row.querySelector('.material-price').value.replace(',', '.')) || 0;
                         const quantity = parseFloat(row.querySelector('.material-quantity').value.replace(',', '.')) || 0;
                         materialsSubtotal += price * quantity;
                     });
-                    document.getElementById('materialsSubtotal').textContent = formatCurrency(materialsSubtotal);
+                    calculatorNode.querySelector('#materialsSubtotal').textContent = formatCurrency(materialsSubtotal);
 
                     let totalMinutes = 0;
-                    document.querySelectorAll('.task-row').forEach(row => {
+                    calculatorNode.querySelectorAll('.task-row').forEach(row => {
                         totalMinutes += parseFloat(row.querySelector('.task-time').value.replace(',', '.')) || 0;
                     });
                     const totalHours = totalMinutes / 60;
-                    document.getElementById('totalTime').textContent = `${Math.round(totalMinutes)} min`;
+                    calculatorNode.querySelector('#totalTime').textContent = `${Math.round(totalMinutes)} min`;
                     const laborCost = totalHours * hourlyRate;
 
                     const pieceFixedCost = totalHours * fixedCostPerHour;
                     const productionCost = materialsSubtotal + laborCost + pieceFixedCost;
-                    document.getElementById('summaryMaterials').textContent = formatCurrency(materialsSubtotal);
-                    document.getElementById('summaryLabor').textContent = formatCurrency(laborCost);
-                    document.getElementById('summaryFixed').textContent = formatCurrency(pieceFixedCost);
-                    document.getElementById('productionCost').textContent = formatCurrency(productionCost);
+                    calculatorNode.querySelector('#summaryMaterials').textContent = formatCurrency(materialsSubtotal);
+                    calculatorNode.querySelector('#summaryLabor').textContent = formatCurrency(laborCost);
+                    calculatorNode.querySelector('#summaryFixed').textContent = formatCurrency(pieceFixedCost);
+                    calculatorNode.querySelector('#productionCost').textContent = formatCurrency(productionCost);
 
-                    const profitMargin = parseFloat(document.getElementById('profitMargin').value.replace(',', '.')) || 0;
-                    const fees = parseFloat(document.getElementById('fees').value.replace(',', '.')) || 0;
+                    const profitMargin = parseFloat(calculatorNode.querySelector('#profitMargin').value.replace(',', '.')) || 0;
+                    const fees = parseFloat(calculatorNode.querySelector('#fees').value.replace(',', '.')) || 0;
                     
                     const basePrice = productionCost * (1 + profitMargin / 100);
                     const finalPrice = fees > 0 && fees < 100 ? basePrice / (1 - fees / 100) : basePrice;
                     const feeValue = finalPrice * (fees / 100);
                     const netProfit = finalPrice - feeValue - productionCost;
 
-                    document.getElementById('finalPrice').textContent = formatCurrency(finalPrice);
-                    document.getElementById('netProfit').textContent = formatCurrency(netProfit);
+                    calculatorNode.querySelector('#finalPrice').textContent = formatCurrency(finalPrice);
+                    calculatorNode.querySelector('#netProfit').textContent = formatCurrency(netProfit);
                 };
 
                 function setNumericInputFilter(inputElement) {
@@ -686,11 +618,11 @@
                         const parts = value.split('.');
                         if (parts.length > 2) value = parts[0] + '.' + parts.slice(1).join('');
                         e.target.value = value;
-                        if (!inputElement.classList.contains('settings-input')) calculateAll();
+                        calculateAll();
                     });
                 }
                 
-                document.querySelectorAll('.numeric-input').forEach(setNumericInputFilter);
+                calculatorNode.querySelectorAll('.numeric-input').forEach(setNumericInputFilter);
                 
                 const observer = new MutationObserver((mutations) => {
                     mutations.forEach((mutation) => {
@@ -703,49 +635,37 @@
                 observer.observe(materialsContainer, { childList: true });
                 observer.observe(tasksContainer, { childList: true });
                 
-                document.querySelectorAll('.settings-input').forEach(input => {
-                    input.addEventListener('input', calculateAll);
-                });
-
-                const generateDescriptionBtn = document.getElementById('generateDescription');
-                const generateSuggestionsBtn = document.getElementById('generateSuggestions');
-                const descriptionLoader = document.getElementById('descriptionLoader');
-                const descriptionResult = document.getElementById('descriptionResult');
-                const suggestionsLoader = document.getElementById('suggestionsLoader');
-                const suggestionsResult = document.getElementById('suggestionsResult');
-
-                generateDescriptionBtn.addEventListener('click', async () => {
-                    const pieceName = document.getElementById('pieceName').value || "uma peça de artesanato";
-                    const materials = Array.from(document.querySelectorAll('.material-name')).map(input => input.value).filter(Boolean);
-                    const finalPrice = document.getElementById('finalPrice').textContent;
-                    if (materials.length === 0) { descriptionResult.textContent = "Adicione pelo menos um material."; return; }
+                calculatorNode.querySelector('#generateDescription').addEventListener('click', async () => {
+                    const pieceName = calculatorNode.querySelector('#pieceName').value || "uma peça de artesanato";
+                    const materials = Array.from(calculatorNode.querySelectorAll('.material-name')).map(input => input.value).filter(Boolean);
+                    const finalPrice = calculatorNode.querySelector('#finalPrice').textContent;
+                    if (materials.length === 0) { calculatorNode.querySelector('#descriptionResult').textContent = "Adicione pelo menos um material."; return; }
                     const dataPayload = { type: 'description', pieceName, materials, finalPrice };
-                    descriptionLoader.classList.remove('hidden');
-                    descriptionResult.textContent = '';
-                    descriptionResult.textContent = await callAIAssistant(dataPayload);
-                    descriptionLoader.classList.add('hidden');
+                    calculatorNode.querySelector('#descriptionLoader').classList.remove('hidden');
+                    calculatorNode.querySelector('#descriptionResult').textContent = '';
+                    calculatorNode.querySelector('#descriptionResult').textContent = await callAIAssistant(dataPayload);
+                    calculatorNode.querySelector('#descriptionLoader').classList.add('hidden');
                 });
 
-                generateSuggestionsBtn.addEventListener('click', async () => {
-                    const pieceName = document.getElementById('pieceName').value || "uma peça de artesanato";
-                    const materials = Array.from(document.querySelectorAll('.material-name')).map(input => input.value).filter(Boolean);
-                    const totalTime = document.getElementById('totalTime').textContent;
-                    const finalPrice = document.getElementById('finalPrice').textContent;
-                    if (materials.length === 0) { suggestionsResult.textContent = "Adicione os detalhes da peça."; return; }
+                calculatorNode.querySelector('#generateSuggestions').addEventListener('click', async () => {
+                    const pieceName = calculatorNode.querySelector('#pieceName').value || "uma peça de artesanato";
+                    const materials = Array.from(calculatorNode.querySelectorAll('.material-name')).map(input => input.value).filter(Boolean);
+                    const totalTime = calculatorNode.querySelector('#totalTime').textContent;
+                    const finalPrice = calculatorNode.querySelector('#finalPrice').textContent;
+                    if (materials.length === 0) { calculatorNode.querySelector('#suggestionsResult').textContent = "Adicione os detalhes da peça."; return; }
                     const dataPayload = { type: 'suggestions', pieceName, materials, totalTime, finalPrice };
-                    suggestionsLoader.classList.remove('hidden');
-                    suggestionsResult.textContent = '';
-                    suggestionsResult.textContent = await callAIAssistant(dataPayload);
-                    suggestionsLoader.classList.add('hidden');
+                    calculatorNode.querySelector('#suggestionsLoader').classList.remove('hidden');
+                    calculatorNode.querySelector('#suggestionsResult').textContent = '';
+                    calculatorNode.querySelector('#suggestionsResult').textContent = await callAIAssistant(dataPayload);
+                    calculatorNode.querySelector('#suggestionsLoader').classList.add('hidden');
                 });
                 
-                const pieceInputs = document.querySelectorAll('.piece-input');
-                const restoreBanner = document.getElementById('restoreBanner');
+                const restoreBanner = calculatorNode.querySelector('#restoreBanner');
 
                 function savePieceToLocalStorage() {
-                    const materials = Array.from(document.querySelectorAll('.material-row')).map(row => ({ name: row.querySelector('.material-name').value, price: row.querySelector('.material-price').value, quantity: row.querySelector('.material-quantity').value }));
-                    const tasks = Array.from(document.querySelectorAll('.task-row')).map(row => ({ name: row.querySelector('.task-name').value, time: row.querySelector('.task-time').value }));
-                    const data = { pieceName: document.getElementById('pieceName').value, profitMargin: document.getElementById('profitMargin').value, fees: document.getElementById('fees').value, materials, tasks };
+                    const materials = Array.from(calculatorNode.querySelectorAll('.material-row')).map(row => ({ name: row.querySelector('.material-name').value, price: row.querySelector('.material-price').value, quantity: row.querySelector('.material-quantity').value }));
+                    const tasks = Array.from(calculatorNode.querySelectorAll('.task-row')).map(row => ({ name: row.querySelector('.task-name').value, time: row.querySelector('.task-time').value }));
+                    const data = { pieceName: calculatorNode.querySelector('#pieceName').value, profitMargin: calculatorNode.querySelector('#profitMargin').value, fees: calculatorNode.querySelector('#fees').value, materials, tasks };
                     localStorage.setItem('unsavedPiece', JSON.stringify(data));
                 }
 
@@ -761,12 +681,12 @@
                     }
                 }
 
-                document.getElementById('restoreYes').addEventListener('click', () => {
+                calculatorNode.querySelector('#restoreYes').addEventListener('click', () => {
                     const savedData = JSON.parse(localStorage.getItem('unsavedPiece'));
                     if (savedData) {
-                        document.getElementById('pieceName').value = savedData.pieceName;
-                        document.getElementById('profitMargin').value = savedData.profitMargin;
-                        document.getElementById('fees').value = savedData.fees;
+                        calculatorNode.querySelector('#pieceName').value = savedData.pieceName;
+                        calculatorNode.querySelector('#profitMargin').value = savedData.profitMargin;
+                        calculatorNode.querySelector('#fees').value = savedData.fees;
                         materialsContainer.innerHTML = '';
                         tasksContainer.innerHTML = '';
                         savedData.materials.forEach(m => addMaterialRow(m.name, m.price, m.quantity));
@@ -777,7 +697,7 @@
                     restoreBanner.classList.add('hidden');
                 });
                 
-                document.getElementById('restoreNo').addEventListener('click', () => {
+                calculatorNode.querySelector('#restoreNo').addEventListener('click', () => {
                     localStorage.removeItem('unsavedPiece');
                     restoreBanner.classList.add('hidden');
                     materialsContainer.innerHTML = '';
@@ -786,32 +706,27 @@
                     addTaskRow();
                 });
 
-                document.body.addEventListener('input', (e) => {
+                calculatorNode.addEventListener('input', (e) => {
                     if (e.target.matches('.piece-input')) {
                         savePieceToLocalStorage();
                     }
                 });
                 
-                // --- Lógica de "Minhas Peças Salvas" ---
-                const savePieceButton = document.getElementById('savePieceButton');
-                const savedPiecesContainer = document.getElementById('savedPiecesContainer');
-                const noPiecesMessage = document.getElementById('noPiecesMessage');
-
-                savePieceButton.addEventListener('click', async () => {
-                    const pieceName = document.getElementById('pieceName').value;
+                calculatorNode.querySelector('#savePieceButton').addEventListener('click', async () => {
+                    const pieceName = calculatorNode.querySelector('#pieceName').value;
                     if (!pieceName) {
                         alert('Por favor, dê um nome à sua peça antes de salvar.');
                         return;
                     }
                     const pieceData = JSON.parse(localStorage.getItem('unsavedPiece'));
                     pieceData.createdAt = new Date();
-                    pieceData.finalPrice = document.getElementById('finalPrice').textContent;
+                    pieceData.finalPrice = calculatorNode.querySelector('#finalPrice').textContent;
                     
                     try {
                         await addDoc(piecesCollectionRef, pieceData);
                         alert(`Peça "${pieceName}" salva com sucesso!`);
                         localStorage.removeItem('unsavedPiece');
-                        document.getElementById('pieceName').value = '';
+                        calculatorNode.querySelector('#pieceName').value = '';
                         materialsContainer.innerHTML = '';
                         tasksContainer.innerHTML = '';
                         addMaterialRow();
@@ -822,154 +737,109 @@
                         alert("Ocorreu um erro ao salvar sua peça. Tente novamente.");
                     }
                 });
-
-                async function loadAndRenderSavedPieces() {
-                    if (!piecesCollectionRef) return;
-                    savedPiecesContainer.innerHTML = '<div class="loader"></div>';
-                    noPiecesMessage.classList.add('hidden');
-
-                    try {
-                        const querySnapshot = await getDocs(piecesCollectionRef);
-                        savedPiecesContainer.innerHTML = '';
-                        if (querySnapshot.empty) {
-                            noPiecesMessage.classList.remove('hidden');
-                        } else {
-                            querySnapshot.forEach(doc => {
-                                const piece = doc.data();
-                                const pieceId = doc.id;
-                                const card = document.createElement('div');
-                                card.classList.add('bg-white', 'p-4', 'rounded-lg', 'shadow-md', 'space-y-2');
-                                card.innerHTML = `
-                                    <h3 class="font-display text-lg text-brand-text font-bold">${piece.pieceName}</h3>
-                                    <p class="text-2xl font-bold text-brand-primary">${piece.finalPrice}</p>
-                                    <div class="flex gap-2 pt-2">
-                                        <button data-id="${pieceId}" class="load-piece-btn flex-1 bg-brand-olive text-white px-3 py-1 rounded-md text-sm font-semibold">Carregar</button>
-                                        <button data-id="${pieceId}" class="delete-piece-btn flex-1 bg-red-500 text-white px-3 py-1 rounded-md text-sm font-semibold">Excluir</button>
-                                    </div>
-                                `;
-                                savedPiecesContainer.appendChild(card);
-                            });
-                        }
-                    } catch (error) {
-                        console.error("Erro ao carregar peças:", error);
-                        savedPiecesContainer.innerHTML = '<p class="text-red-500">Não foi possível carregar suas peças.</p>';
-                    }
-                }
-                
-                savedPiecesContainer.addEventListener('click', async (e) => {
-                    const pieceId = e.target.dataset.id;
-                    if (!pieceId) return;
-
-                    if (e.target.classList.contains('delete-piece-btn')) {
-                        if (confirm('Tem certeza que deseja excluir esta peça?')) {
-                            try {
-                                await deleteDoc(doc(db, "atelierData", currentUser.uid, "pieces", pieceId));
-                                loadAndRenderSavedPieces();
-                            } catch (error) {
-                                alert('Erro ao excluir a peça.');
-                            }
-                        }
-                    } else if (e.target.classList.contains('load-piece-btn')) {
-                        try {
-                            const pieceDoc = await getDoc(doc(db, "atelierData", currentUser.uid, "pieces", pieceId));
-                            if (pieceDoc.exists()) {
-                                const pieceData = pieceDoc.data();
-                                localStorage.setItem('unsavedPiece', JSON.stringify(pieceData));
-                                navigate('#calculator');
-                                checkAndRestorePiece();
-                            }
-                        } catch (error) {
-                            alert('Erro ao carregar a peça.');
-                        }
-                    }
-                });
-
-                // --- Lógica de Navegação SPA ---
-                const mainContent = document.getElementById('main-content');
-                const templates = {
-                    dashboard: document.getElementById('dashboard-template'),
-                    calculator: document.getElementById('calculator-template'),
-                    'my-pieces': document.getElementById('my-pieces-template'),
-                    settings: document.getElementById('settings-template'),
-                    management: document.getElementById('coming-soon-template'),
-                    stock: document.getElementById('coming-soon-template'),
-                };
-
-                function navigate(hash) {
-                    const targetView = hash.substring(1); // remove #
-                    
-                    document.querySelectorAll('.nav-link').forEach(link => {
-                        if (link.hash === hash) {
-                            link.classList.add('bg-brand-primary/20');
-                        } else {
-                            link.classList.remove('bg-brand-primary/20');
-                        }
-                    });
-
-                    const template = templates[targetView];
-                    if (template) {
-                        mainContent.innerHTML = '';
-                        mainContent.appendChild(template.content.cloneNode(true));
-                        // Re-executar scripts ou re-anexar listeners se necessário
-                        if (targetView === 'calculator') setupCalculator();
-                        if (targetView === 'my-pieces') loadAndRenderSavedPieces();
-                        if (targetView === 'settings') {
-                            // Preencher dados e anexar listener de salvar
-                            document.getElementById('profileName').value = currentUser.displayName || '';
-                            document.getElementById('profileEmail').value = currentUser.email || '';
-                            document.getElementById('saveProfileButton').addEventListener('click', async () => {
-                                const newName = document.getElementById('profileName').value;
-                                if (!newName) { alert('O nome não pode ficar em branco.'); return; }
-                                try {
-                                    await updateProfile(currentUser, { displayName: newName });
-                                    await setDoc(atelierDataRef, { name: newName }, { merge: true });
-                                    document.getElementById('welcomeMessage').textContent = `Bem-vinda, ${newName}!`;
-                                    alert('Perfil atualizado com sucesso!');
-                                } catch (error) {
-                                    console.error("Erro ao atualizar perfil:", error);
-                                    alert('Ocorreu um erro ao atualizar seu perfil.');
-                                }
-                            });
-                             document.querySelectorAll('.settings-input').forEach(input => {
-                                input.addEventListener('input', () => {
-                                    clearTimeout(saveTimeout);
-                                    statusIndicator.querySelector('span').textContent = 'Salvando...';
-                                    statusIndicator.classList.remove('text-brand-olive');
-                                    statusIndicator.classList.add('text-yellow-600');
-                                    statusIndicator.style.opacity = '1';
-                                    saveTimeout = setTimeout(() => saveAtelierData(), 1500);
-                                });
-                            });
-                        }
-                    }
-                }
-
-                document.querySelectorAll('.nav-link').forEach(link => {
-                    link.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        const hash = e.currentTarget.hash;
-                        if(e.currentTarget.classList.contains('cursor-not-allowed')) return;
-                        navigate(hash);
-                    });
-                });
-                
-                const sidebar = document.getElementById('sidebar');
-                const sidebarToggle = document.getElementById('sidebar-toggle');
-                const sidebarOverlay = document.getElementById('sidebar-overlay');
-
-                sidebarToggle.addEventListener('click', () => {
-                    sidebar.classList.toggle('-translate-x-full');
-                    sidebarOverlay.classList.toggle('hidden');
-                });
-                sidebarOverlay.addEventListener('click', () => {
-                    sidebar.classList.add('-translate-x-full');
-                    sidebarOverlay.classList.add('hidden');
-                });
-                
-                navigate('#dashboard');
             }
 
-            main();
+            const mainContent = document.getElementById('main-content');
+            const templates = {
+                dashboard: document.getElementById('dashboard-template'),
+                calculator: document.getElementById('calculator-template'),
+                'my-pieces': document.getElementById('my-pieces-template'),
+                settings: document.getElementById('settings-template'),
+                management: document.getElementById('coming-soon-template'),
+                stock: document.getElementById('coming-soon-template'),
+            };
+
+            async function navigate(hash) {
+                const targetView = hash.substring(1);
+                
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.classList.toggle('bg-brand-primary/20', link.hash === hash);
+                });
+
+                const template = templates[targetView];
+                if (template) {
+                    mainContent.innerHTML = '';
+                    mainContent.appendChild(template.content.cloneNode(true));
+                    
+                    if (targetView === 'my-pieces') {
+                        const savedPiecesContainer = document.getElementById('savedPiecesContainer');
+                        savedPiecesContainer.addEventListener('click', async (e) => {
+                            const pieceId = e.target.dataset.id;
+                            if (!pieceId) return;
+                            if (e.target.classList.contains('delete-piece-btn')) {
+                                if (confirm('Tem certeza que deseja excluir esta peça?')) {
+                                    await deleteDoc(doc(db, "atelierData", currentUser.uid, "pieces", pieceId));
+                                    loadAndRenderSavedPieces();
+                                }
+                            } else if (e.target.classList.contains('load-piece-btn')) {
+                                const pieceDoc = await getDoc(doc(db, "atelierData", currentUser.uid, "pieces", pieceId));
+                                if (pieceDoc.exists()) {
+                                    localStorage.setItem('unsavedPiece', JSON.stringify(pieceDoc.data()));
+                                    navigate('#calculator');
+                                }
+                            }
+                        });
+                        loadAndRenderSavedPieces();
+                    } else if (targetView === 'settings') {
+                        const docSnap = await getDoc(atelierDataRef);
+                        const data = docSnap.data() || {};
+                        document.getElementById('profileName').value = currentUser.displayName || data.name || '';
+                        document.getElementById('profileEmail').value = currentUser.email || '';
+                        document.getElementById('settingsHourlyRate').value = data.hourlyRate || '';
+                        document.getElementById('settingsFixedCosts').value = data.fixedCosts || '';
+                        document.getElementById('settingsHoursWorked').value = data.hoursWorked || '';
+                        
+                        document.getElementById('saveProfileButton').addEventListener('click', async () => {
+                            const newName = document.getElementById('profileName').value;
+                            if (!newName) { alert('O nome não pode ficar em branco.'); return; }
+                            await updateProfile(currentUser, { displayName: newName });
+                            await setDoc(atelierDataRef, { name: newName }, { merge: true });
+                            document.getElementById('welcomeMessage').textContent = `Bem-vinda, ${newName}!`;
+                            alert('Perfil atualizado!');
+                        });
+
+                        document.querySelectorAll('.settings-input').forEach(input => {
+                            input.addEventListener('input', () => {
+                                clearTimeout(saveTimeout);
+                                statusIndicator.querySelector('span').textContent = 'Salvando...';
+                                statusIndicator.classList.remove('text-brand-olive');
+                                statusIndicator.classList.add('text-yellow-600');
+                                statusIndicator.style.opacity = '1';
+                                saveTimeout = setTimeout(() => saveAtelierData(), 1500);
+                            });
+                        });
+                    } else if (targetView === 'calculator') {
+                        const docSnap = await getDoc(atelierDataRef);
+                        setupCalculator(docSnap.data() || {});
+                        checkAndRestorePiece();
+                    } else if (targetView === 'dashboard') {
+                        document.getElementById('welcomeMessage').textContent = `Bem-vinda, ${currentUser.displayName || 'Artesã'}!`;
+                    }
+                }
+            }
+
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if(e.currentTarget.classList.contains('cursor-not-allowed')) return;
+                    navigate(e.currentTarget.hash);
+                });
+            });
+            
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('-translate-x-full');
+                sidebarOverlay.classList.toggle('hidden');
+            });
+            sidebarOverlay.addEventListener('click', () => {
+                sidebar.classList.add('-translate-x-full');
+                sidebarOverlay.classList.add('hidden');
+            });
+        }
+
+        main();
     </script>
 </body>
 </html>

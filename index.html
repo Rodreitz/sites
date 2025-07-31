@@ -217,6 +217,10 @@
                     <h2 class="font-display text-2xl text-brand-text mb-4 flex items-center">
                        <span class="text-3xl mr-3">2.</span> Resumo dos Custos
                     </h2>
+                     <div class="mt-4 bg-brand-bg p-3 rounded-lg text-center mb-4">
+                        <p class="text-sm text-brand-text">Custo Fixo por Hora do Ateliê (configurado por você):</p>
+                        <p id="fixedCostPerHour" class="text-lg font-bold text-brand-text">R$ 0,00</p>
+                    </div>
                     <div class="space-y-3">
                         <div class="flex justify-between items-center bg-gray-50 p-3 rounded-md">
                             <span class="font-medium text-gray-600">Custo Total de Materiais</span>
@@ -536,6 +540,8 @@
             
             function setupCalculator() {
                 const calculatorNode = document.getElementById('calculatorView');
+                if (!calculatorNode) return;
+
                 const materialsContainer = calculatorNode.querySelector('#materialsContainer');
                 const tasksContainer = calculatorNode.querySelector('#tasksContainer');
                 const addMaterialBtn = calculatorNode.querySelector('#addMaterial');
@@ -719,8 +725,8 @@
                     }
                     const pieceData = JSON.parse(localStorage.getItem('unsavedPiece'));
                     if (!pieceData) {
-                        alert('Não há dados para salvar. Preencha os campos da peça.');
-                        return;
+                        savePieceToLocalStorage();
+                        pieceData = JSON.parse(localStorage.getItem('unsavedPiece'));
                     }
                     pieceData.createdAt = new Date();
                     pieceData.finalPrice = calculatorNode.querySelector('#finalPrice').textContent;
@@ -730,6 +736,8 @@
                         alert(`Peça "${pieceName}" salva com sucesso!`);
                         localStorage.removeItem('unsavedPiece');
                         calculatorNode.querySelector('#pieceName').value = '';
+                        calculatorNode.querySelector('#profitMargin').value = '';
+                        calculatorNode.querySelector('#fees').value = '';
                         materialsContainer.innerHTML = '';
                         tasksContainer.innerHTML = '';
                         addMaterialRow();
@@ -849,10 +857,6 @@
                                             settingsStatus.classList.remove('text-yellow-600');
                                             settingsStatus.classList.add('text-brand-olive');
                                             setTimeout(() => { settingsStatus.style.opacity = '0'; }, 2000);
-                                        })
-                                        .catch(() => {
-                                            settingsStatus.querySelector('span').textContent = 'Erro ao salvar!';
-                                            settingsStatus.classList.add('text-red-500');
                                         });
                                 }, 1500);
                             });

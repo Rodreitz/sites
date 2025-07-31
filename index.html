@@ -388,7 +388,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, collection, addDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, addDoc, getDocs, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         async function getFirebaseConfig() {
             try {
@@ -420,6 +420,7 @@
             let currentUser = null;
             let atelierDataRef = null;
             let piecesCollectionRef = null;
+            let atelierData = {};
 
             onAuthStateChanged(auth, (user) => {
                 if (user) {
@@ -431,8 +432,6 @@
                     loadUserDataAndNavigate();
                 } else {
                     currentUser = null;
-                    atelierDataRef = null;
-                    piecesCollectionRef = null;
                     authContainer.classList.remove('hidden');
                     appView.classList.add('hidden');
                 }
@@ -484,7 +483,7 @@
                 createUserWithEmailAndPassword(auth, email, password)
                     .then(async (userCredential) => {
                         await updateProfile(userCredential.user, { displayName: name });
-                        await setDoc(doc(db, "atelierData", userCredential.user.uid), { name: name }, { merge: true });
+                        await setDoc(doc(db, "atelierData", userCredential.user.uid), { name: name, hasLoggedInBefore: false }, { merge: true });
                         alert("Cadastro realizado com sucesso!");
                     })
                     .catch((error) => {
@@ -502,8 +501,8 @@
                 try {
                     const docSnap = await getDoc(atelierDataRef);
                     if (docSnap.exists()) {
-                        const data = docSnap.data();
-                        if (!data.hasLoggedInBefore) {
+                        atelierData = docSnap.data();
+                        if (!atelierData.hasLoggedInBefore) {
                             document.getElementById('welcomeModal').classList.remove('hidden');
                         }
                     } else {
@@ -535,7 +534,7 @@
                 }
             };
             
-            function setupCalculator(atelierData) {
+            function setupCalculator() {
                 const calculatorNode = document.getElementById('calculatorView');
                 const materialsContainer = calculatorNode.querySelector('#materialsContainer');
                 const tasksContainer = calculatorNode.querySelector('#tasksContainer');
@@ -571,9 +570,9 @@
                 addTaskBtn.addEventListener('click', () => addTaskRow());
 
                 const calculateAll = () => {
-                    const hourlyRate = parseFloat(atelierData.hourlyRate.replace(',', '.')) || 0;
-                    const fixedCosts = parseFloat(atelierData.fixedCosts.replace(',', '.')) || 0;
-                    const hoursWorked = parseFloat(atelierData.hoursWorked.replace(',', '.')) || 0;
+                    const hourlyRate = parseFloat(atelierData.hourlyRate?.replace(',', '.')) || 0;
+                    const fixedCosts = parseFloat(atelierData.fixedCosts?.replace(',', '.')) || 0;
+                    const hoursWorked = parseFloat(atelierData.hoursWorked?.replace(',', '.')) || 0;
                     const fixedCostPerHour = hoursWorked > 0 ? fixedCosts / hoursWorked : 0;
                     calculatorNode.querySelector('#fixedCostPerHour').textContent = formatCurrency(fixedCostPerHour);
 
@@ -719,6 +718,10 @@
                         return;
                     }
                     const pieceData = JSON.parse(localStorage.getItem('unsavedPiece'));
+                    if (!pieceData) {
+                        alert('Não há dados para salvar. Preencha os campos da peça.');
+                        return;
+                    }
                     pieceData.createdAt = new Date();
                     pieceData.finalPrice = calculatorNode.querySelector('#finalPrice').textContent;
                     
@@ -782,12 +785,12 @@
                         loadAndRenderSavedPieces();
                     } else if (targetView === 'settings') {
                         const docSnap = await getDoc(atelierDataRef);
-                        const data = docSnap.data() || {};
-                        document.getElementById('profileName').value = currentUser.displayName || data.name || '';
+                        atelierData = docSnap.data() || {};
+                        document.getElementById('profileName').value = currentUser.displayName || atelierData.name || '';
                         document.getElementById('profileEmail').value = currentUser.email || '';
-                        document.getElementById('settingsHourlyRate').value = data.hourlyRate || '';
-                        document.getElementById('settingsFixedCosts').value = data.fixedCosts || '';
-                        document.getElementById('settingsHoursWorked').value = data.hoursWorked || '';
+                        document.getElementById('settingsHourlyRate').value = atelierData.hourlyRate || '';
+                        document.getElementById('settingsFixedCosts').value = atelierData.fixedCosts || '';
+                        document.getElementById('settingsHoursWorked').value = atelierData.hoursWorked || '';
                         
                         document.getElementById('saveProfileButton').addEventListener('click', async () => {
                             const newName = document.getElementById('profileName').value;
@@ -801,6 +804,7 @@
                         document.querySelectorAll('.settings-input').forEach(input => {
                             input.addEventListener('input', () => {
                                 clearTimeout(saveTimeout);
+                                const statusIndicator = document.getElementById('settingsStatus');
                                 statusIndicator.querySelector('span').textContent = 'Salvando...';
                                 statusIndicator.classList.remove('text-brand-olive');
                                 statusIndicator.classList.add('text-yellow-600');
@@ -810,20 +814,22 @@
                         });
                     } else if (targetView === 'calculator') {
                         const docSnap = await getDoc(atelierDataRef);
-                        setupCalculator(docSnap.data() || {});
+                        atelierData = docSnap.data() || {};
+                        setupCalculator();
                         checkAndRestorePiece();
                     } else if (targetView === 'dashboard') {
                         document.getElementById('welcomeMessage').textContent = `Bem-vinda, ${currentUser.displayName || 'Artesã'}!`;
                     }
                 }
             }
-
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.addEventListener('click', (e) => {
+            
+            appView.addEventListener('click', (e) => {
+                if (e.target.matches('.nav-link, .nav-link *')) {
+                    const link = e.target.closest('.nav-link');
+                    if(link.classList.contains('cursor-not-allowed')) return;
                     e.preventDefault();
-                    if(e.currentTarget.classList.contains('cursor-not-allowed')) return;
-                    navigate(e.currentTarget.hash);
-                });
+                    navigate(link.hash);
+                }
             });
             
             const sidebar = document.getElementById('sidebar');

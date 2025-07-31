@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora Arttes da Bel</title>
+    <title>Arttes da Bel - Ferramentas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -124,7 +124,7 @@
                 </a>
                 <nav>
                     <a href="#dashboard" class="nav-link block py-2.5 px-4 rounded transition duration-200 hover:bg-brand-primary hover:text-white bg-brand-primary/20">Página Inicial</a>
-                    <a href="#calculator" class="nav-link block py-2.5 px-4 rounded transition duration-200 hover:bg-brand-primary hover:text-white">Calculadora F.L.O.R.A.</a>
+                    <a href="#calculator" class="nav-link block py-2.5 px-4 rounded transition duration-200 hover:bg-brand-primary hover:text-white">Calculadora de Preço</a>
                     <a href="#my-pieces" class="nav-link block py-2.5 px-4 rounded transition duration-200 hover:bg-brand-primary hover:text-white">Minhas Peças Salvas</a>
                     <a href="#management" class="nav-link block py-2.5 px-4 rounded transition duration-200 hover:bg-brand-primary hover:text-white opacity-50 cursor-not-allowed">Gestão de Encomendas</a>
                     <a href="#stock" class="nav-link block py-2.5 px-4 rounded transition duration-200 hover:bg-brand-primary hover:text-white opacity-50 cursor-not-allowed">Controle de Estoque</a>
@@ -160,7 +160,7 @@
             <p id="welcomeMessage" class="text-lg text-gray-600 mb-8">Aqui você encontra as ferramentas para florescer seu ateliê.</p>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <a href="#calculator" class="nav-link bg-white p-6 rounded-2xl shadow-lg shadow-brand-olive/20 hover:shadow-xl transition-shadow">
-                    <h2 class="font-display text-xl text-brand-primary">Calculadora F.L.O.R.A.</h2>
+                    <h2 class="font-display text-xl text-brand-primary">Calculadora de Preço</h2>
                     <p class="mt-2 text-sm">Calcule o preço justo de suas peças com confiança e garanta seu lucro.</p>
                 </a>
                 <a href="#my-pieces" class="nav-link bg-white p-6 rounded-2xl shadow-lg shadow-brand-olive/20 hover:shadow-xl transition-shadow">
@@ -766,6 +766,38 @@
                     
                     if (targetView === 'my-pieces') {
                         const savedPiecesContainer = document.getElementById('savedPiecesContainer');
+                        const loadAndRenderSavedPieces = async () => {
+                            if (!piecesCollectionRef) return;
+                            savedPiecesContainer.innerHTML = '<div class="loader"></div>';
+                            document.getElementById('noPiecesMessage').classList.add('hidden');
+                            try {
+                                const q = query(piecesCollectionRef, orderBy("createdAt", "desc"));
+                                const querySnapshot = await getDocs(q);
+                                savedPiecesContainer.innerHTML = '';
+                                if (querySnapshot.empty) {
+                                    document.getElementById('noPiecesMessage').classList.remove('hidden');
+                                } else {
+                                    querySnapshot.forEach(doc => {
+                                        const piece = doc.data();
+                                        const pieceId = doc.id;
+                                        const card = document.createElement('div');
+                                        card.classList.add('bg-white', 'p-4', 'rounded-lg', 'shadow-md', 'space-y-2');
+                                        card.innerHTML = `
+                                            <h3 class="font-display text-lg text-brand-text font-bold">${piece.pieceName}</h3>
+                                            <p class="text-2xl font-bold text-brand-primary">${piece.finalPrice}</p>
+                                            <div class="flex gap-2 pt-2">
+                                                <button data-id="${pieceId}" class="load-piece-btn flex-1 bg-brand-olive text-white px-3 py-1 rounded-md text-sm font-semibold">Carregar</button>
+                                                <button data-id="${pieceId}" class="delete-piece-btn flex-1 bg-red-500 text-white px-3 py-1 rounded-md text-sm font-semibold">Excluir</button>
+                                            </div>`;
+                                        savedPiecesContainer.appendChild(card);
+                                    });
+                                }
+                            } catch (error) {
+                                console.error("Erro ao carregar peças:", error);
+                                savedPiecesContainer.innerHTML = '<p class="text-red-500">Não foi possível carregar suas peças.</p>';
+                            }
+                        };
+                        
                         savedPiecesContainer.addEventListener('click', async (e) => {
                             const pieceId = e.target.dataset.id;
                             if (!pieceId) return;
@@ -784,8 +816,7 @@
                         });
                         loadAndRenderSavedPieces();
                     } else if (targetView === 'settings') {
-                        const docSnap = await getDoc(atelierDataRef);
-                        atelierData = docSnap.data() || {};
+                        const settingsStatus = document.getElementById('settingsStatus');
                         document.getElementById('profileName').value = currentUser.displayName || atelierData.name || '';
                         document.getElementById('profileEmail').value = currentUser.email || '';
                         document.getElementById('settingsHourlyRate').value = atelierData.hourlyRate || '';
@@ -797,24 +828,36 @@
                             if (!newName) { alert('O nome não pode ficar em branco.'); return; }
                             await updateProfile(currentUser, { displayName: newName });
                             await setDoc(atelierDataRef, { name: newName }, { merge: true });
-                            document.getElementById('welcomeMessage').textContent = `Bem-vinda, ${newName}!`;
+                            atelierData.name = newName;
                             alert('Perfil atualizado!');
                         });
 
                         document.querySelectorAll('.settings-input').forEach(input => {
                             input.addEventListener('input', () => {
                                 clearTimeout(saveTimeout);
-                                const statusIndicator = document.getElementById('settingsStatus');
-                                statusIndicator.querySelector('span').textContent = 'Salvando...';
-                                statusIndicator.classList.remove('text-brand-olive');
-                                statusIndicator.classList.add('text-yellow-600');
-                                statusIndicator.style.opacity = '1';
-                                saveTimeout = setTimeout(() => saveAtelierData(), 1500);
+                                settingsStatus.querySelector('span').textContent = 'Salvando...';
+                                settingsStatus.classList.remove('text-brand-olive');
+                                settingsStatus.classList.add('text-yellow-600');
+                                settingsStatus.style.opacity = '1';
+                                saveTimeout = setTimeout(() => {
+                                    atelierData.hourlyRate = document.getElementById('settingsHourlyRate').value;
+                                    atelierData.fixedCosts = document.getElementById('settingsFixedCosts').value;
+                                    atelierData.hoursWorked = document.getElementById('settingsHoursWorked').value;
+                                    setDoc(atelierDataRef, { ...atelierData }, { merge: true })
+                                        .then(() => {
+                                            settingsStatus.querySelector('span').textContent = 'Salvo na nuvem!';
+                                            settingsStatus.classList.remove('text-yellow-600');
+                                            settingsStatus.classList.add('text-brand-olive');
+                                            setTimeout(() => { settingsStatus.style.opacity = '0'; }, 2000);
+                                        })
+                                        .catch(() => {
+                                            settingsStatus.querySelector('span').textContent = 'Erro ao salvar!';
+                                            settingsStatus.classList.add('text-red-500');
+                                        });
+                                }, 1500);
                             });
                         });
                     } else if (targetView === 'calculator') {
-                        const docSnap = await getDoc(atelierDataRef);
-                        atelierData = docSnap.data() || {};
                         setupCalculator();
                         checkAndRestorePiece();
                     } else if (targetView === 'dashboard') {

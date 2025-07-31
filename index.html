@@ -41,38 +41,75 @@
 </head>
 <body class="bg-brand-bg/50 text-brand-text">
 
-    <!-- Seção de Login -->
-    <div id="loginView">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="w-full max-w-md">
-                <header class="text-center mb-8">
-                    <img src="https://raw.githubusercontent.com/Rodreitz/sites/adab42e1b226613b95b484f00337e8c1903b186b/LOGO%20COM%20NOME%20transparente.png" alt="Logo Arttes da Bel" class="mx-auto w-48 h-auto mb-4">
-                    <h1 class="font-display text-3xl text-brand-primary">Área Exclusiva</h1>
-                    <p class="text-brand-text">Acesse a calculadora e outras ferramentas.</p>
-                </header>
-                <main class="bg-white p-8 rounded-2xl shadow-lg shadow-brand-olive/20">
-                    <form id="authForm" class="space-y-6">
-                        <div>
-                            <label for="email" class="block text-sm font-medium text-brand-text">Email</label>
-                            <input type="email" id="email" name="email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-brand-primary focus:border-brand-primary">
-                        </div>
-                        <div>
-                            <label for="password" class="block text-sm font-medium text-brand-text">Senha</label>
-                            <input type="password" id="password" name="password" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-brand-primary focus:border-brand-primary">
-                        </div>
-                        <div id="errorMessage" class="hidden p-3 bg-red-100 text-red-700 rounded-md text-sm"></div>
-                        <div class="flex flex-col gap-4">
+    <!-- Seção de Autenticação -->
+    <div id="authContainer">
+        <!-- Tela de Login -->
+        <div id="loginView">
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div class="w-full max-w-md">
+                    <header class="text-center mb-8">
+                        <img src="https://raw.githubusercontent.com/Rodreitz/sites/adab42e1b226613b95b484f00337e8c1903b186b/LOGO%20COM%20NOME%20transparente.png" alt="Logo Arttes da Bel" class="mx-auto w-48 h-auto mb-4">
+                        <h1 class="font-display text-3xl text-brand-primary">Área Exclusiva</h1>
+                        <p class="text-brand-text">Acesse a calculadora e outras ferramentas.</p>
+                    </header>
+                    <main class="bg-white p-8 rounded-2xl shadow-lg shadow-brand-olive/20">
+                        <form id="loginForm" class="space-y-6">
+                            <div>
+                                <label for="loginEmail" class="block text-sm font-medium text-brand-text">Email</label>
+                                <input type="email" id="loginEmail" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-brand-primary focus:border-brand-primary">
+                            </div>
+                            <div>
+                                <label for="loginPassword" class="block text-sm font-medium text-brand-text">Senha</label>
+                                <input type="password" id="loginPassword" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-brand-primary focus:border-brand-primary">
+                            </div>
+                            <div id="loginErrorMessage" class="hidden p-3 bg-red-100 text-red-700 rounded-md text-sm"></div>
                             <button type="submit" id="loginButton" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-brand-primary hover:bg-brand-text focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary font-semibold">Entrar</button>
-                            <button type="submit" id="registerButton" class="w-full flex justify-center py-2 px-4 border border-brand-olive text-brand-text bg-transparent hover:bg-brand-bg rounded-md shadow-sm font-semibold">Cadastrar</button>
-                        </div>
-                    </form>
-                </main>
-                <footer class="text-center mt-8 text-sm text-gray-500">
-                    <p>&copy; 2024 - Arttes da Bel</p>
+                        </form>
+                        <p class="text-center text-sm mt-6">
+                            Não tem uma conta? <a href="#" id="showRegisterViewLink" class="font-medium text-brand-primary hover:underline">Cadastre-se</a>
+                        </p>
+                    </main>
+                    <footer class="text-center mt-8 text-sm text-gray-500">
+                        <p>&copy; 2024 - Arttes da Bel</p>
+                    </footer>
+                </div>
+            </div>
+        </div>
+        <!-- Tela de Cadastro -->
+        <div id="registerView" class="hidden">
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div class="w-full max-w-md">
+                    <header class="text-center mb-8">
+                        <img src="https://raw.githubusercontent.com/Rodreitz/sites/adab42e1b226613b95b484f00337e8c1903b186b/LOGO%20COM%20NOME%20transparente.png" alt="Logo Arttes da Bel" class="mx-auto w-48 h-auto mb-4">
+                        <h1 class="font-display text-3xl text-brand-primary">Crie sua Conta</h1>
+                        <p class="text-brand-text">É rápido e fácil!</p>
+                    </header>
+                    <main class="bg-white p-8 rounded-2xl shadow-lg shadow-brand-olive/20">
+                        <form id="registerForm" class="space-y-6">
+                            <div>
+                                <label for="registerName" class="block text-sm font-medium text-brand-text">Seu Nome</label>
+                                <input type="text" id="registerName" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-brand-primary focus:border-brand-primary">
+                            </div>
+                            <div>
+                                <label for="registerEmail" class="block text-sm font-medium text-brand-text">Email</label>
+                                <input type="email" id="registerEmail" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-brand-primary focus:border-brand-primary">
+                            </div>
+                            <div>
+                                <label for="registerPassword" class="block text-sm font-medium text-brand-text">Senha</label>
+                                <input type="password" id="registerPassword" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-brand-primary focus:border-brand-primary">
+                            </div>
+                            <div id="registerErrorMessage" class="hidden p-3 bg-red-100 text-red-700 rounded-md text-sm"></div>
+                            <button type="submit" id="registerButton" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-brand-primary hover:bg-brand-text focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary font-semibold">Criar Conta</button>
+                        </form>
+                         <p class="text-center text-sm mt-6">
+                            Já tem uma conta? <a href="#" id="showLoginViewLink" class="font-medium text-brand-primary hover:underline">Faça o login</a>
+                        </p>
+                    </main>
                 </footer>
             </div>
         </div>
     </div>
+</div>
 
     <!-- Seção do Aplicativo (Layout Principal) -->
     <div id="appView" class="hidden">
@@ -88,9 +125,10 @@
                 <nav>
                     <a href="#dashboard" class="nav-link block py-2.5 px-4 rounded transition duration-200 hover:bg-brand-primary hover:text-white bg-brand-primary/20">Página Inicial</a>
                     <a href="#calculator" class="nav-link block py-2.5 px-4 rounded transition duration-200 hover:bg-brand-primary hover:text-white">Calculadora F.L.O.R.A.</a>
-                    <a href="#my-pieces" class="nav-link block py-2.5 px-4 rounded transition duration-200 hover:bg-brand-primary hover:text-white opacity-50 cursor-not-allowed">Minhas Peças Salvas</a>
-                    <a href="#management" class="nav-link block py-2.5 px-4 rounded transition duration-200 hover:bg-brand-primary hover:text-white">Gestão de Encomendas</a>
-                    <a href="#stock" class="nav-link block py-2.5 px-4 rounded transition duration-200 hover:bg-brand-primary hover:text-white">Controle de Estoque</a>
+                    <a href="#my-pieces" class="nav-link block py-2.5 px-4 rounded transition duration-200 hover:bg-brand-primary hover:text-white">Minhas Peças Salvas</a>
+                    <a href="#management" class="nav-link block py-2.5 px-4 rounded transition duration-200 hover:bg-brand-primary hover:text-white opacity-50 cursor-not-allowed">Gestão de Encomendas</a>
+                    <a href="#stock" class="nav-link block py-2.5 px-4 rounded transition duration-200 hover:bg-brand-primary hover:text-white opacity-50 cursor-not-allowed">Controle de Estoque</a>
+                    <a href="#settings" class="nav-link block py-2.5 px-4 rounded transition duration-200 hover:bg-brand-primary hover:text-white">Configurações</a>
                 </nav>
             </aside>
             
@@ -100,223 +138,257 @@
                     <button id="sidebar-toggle" class="text-brand-text focus:outline-none">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                     </button>
-                    <button id="logoutButton" class="text-sm bg-brand-pink text-white font-semibold py-1 px-3 rounded-full hover:bg-brand-primary transition-colors">Sair</button>
+                    <div class="flex items-center gap-4">
+                        <a href="#settings" class="nav-link text-brand-text hover:text-brand-primary">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        </a>
+                        <button id="logoutButton" class="text-sm bg-brand-pink text-white font-semibold py-1 px-3 rounded-full hover:bg-brand-primary transition-colors">Sair</button>
+                    </div>
                 </header>
                 
                 <div id="main-content" class="flex-1 p-4 md:p-8 overflow-y-auto">
-                    <!-- Página Inicial / Dashboard -->
-                    <div id="dashboardView">
-                        <h1 class="font-display text-3xl text-brand-text mb-2">Bem-vinda, Artesã!</h1>
-                        <p id="welcomeMessage" class="text-lg text-gray-600 mb-8">Aqui você encontra as ferramentas para florescer seu ateliê.</p>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <a href="#calculator" class="nav-link bg-white p-6 rounded-2xl shadow-lg shadow-brand-olive/20 hover:shadow-xl transition-shadow">
-                                <h2 class="font-display text-xl text-brand-primary">Calculadora F.L.O.R.A.</h2>
-                                <p class="mt-2 text-sm">Calcule o preço justo de suas peças com confiança e garanta seu lucro.</p>
-                            </a>
-                            <a href="#my-pieces" class="nav-link bg-white p-6 rounded-2xl shadow-lg shadow-brand-olive/20 opacity-50 cursor-not-allowed">
-                                <h2 class="font-display text-xl text-brand-text">Minhas Peças Salvas</h2>
-                                <p class="mt-2 text-sm">Acesse seu catálogo de produtos com preços já calculados. (Em breve)</p>
-                            </a>
-                            <a href="#management" class="nav-link bg-white p-6 rounded-2xl shadow-lg shadow-brand-olive/20">
-                                <h2 class="font-display text-xl text-brand-text">Gestão de Encomendas</h2>
-                                <p class="mt-2 text-sm">Organize seus pedidos e acompanhe o status de cada um. (Em breve)</p>
-                            </a>
-                            <a href="#stock" class="nav-link bg-white p-6 rounded-2xl shadow-lg shadow-brand-olive/20">
-                                <h2 class="font-display text-xl text-brand-text">Controle de Estoque</h2>
-                                <p class="mt-2 text-sm">Saiba exatamente quais materiais você tem e quando precisa comprar mais. (Em breve)</p>
-                            </a>
-                        </div>
-                    </div>
-                    
-                    <!-- Calculadora -->
-                    <div id="calculatorView" class="hidden">
-                        <main class="space-y-8">
-                            <div id="restoreBanner" class="hidden bg-brand-olive/20 p-4 rounded-lg flex items-center justify-between">
-                                <p class="text-brand-text font-medium">Encontramos um cálculo não salvo. Deseja restaurá-lo?</p>
-                                <div>
-                                    <button id="restoreYes" class="bg-brand-primary text-white px-3 py-1 rounded-md text-sm font-semibold mr-2">Sim</button>
-                                    <button id="restoreNo" class="bg-gray-300 text-gray-700 px-3 py-1 rounded-md text-sm">Não</button>
-                                </div>
-                            </div>
-                            <section class="bg-white p-6 rounded-2xl shadow-lg shadow-brand-olive/20">
-                                <div class="flex justify-between items-center mb-4">
-                                    <h2 class="font-display text-2xl text-brand-text flex items-center">
-                                        <span class="text-3xl mr-3">1.</span> Dados do Seu Ateliê 
-                                    </h2>
-                                    <span id="atelierDataStatus" class="saved-status text-sm font-medium text-brand-olive opacity-0 flex items-center gap-2">
-                                        <svg id="statusIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                        <span id="statusText">Salvo!</span>
-                                    </span>
-                                </div>
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    <div>
-                                        <label for="hourlyRate" class="block text-sm font-medium text-brand-text">Valor da sua Hora de Trabalho</label>
-                                        <p class="text-xs text-gray-500 mt-1">Quanto você quer ganhar por hora de costura?</p>
-                                        <div class="relative mt-2 input-group">
-                                            <span class="input-prefix">R$</span>
-                                            <input type="text" inputmode="decimal" id="hourlyRate" class="atelier-input numeric-input w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" placeholder="20,00">
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label for="fixedCosts" class="block text-sm font-medium text-brand-text">Custos Fixos Mensais</label>
-                                        <p class="text-xs text-gray-500 mt-1">Luz, internet, aluguel, etc.</p>
-                                        <div class="relative mt-2 input-group">
-                                             <span class="input-prefix">R$</span>
-                                            <input type="text" inputmode="decimal" id="fixedCosts" class="atelier-input numeric-input w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" placeholder="300,00">
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label for="hoursWorked" class="block text-sm font-medium text-brand-text">Horas Trabalhadas por Mês</label>
-                                        <p class="text-xs text-gray-500 mt-1">Quantas horas você se dedica à produção.</p>
-                                        <input type="text" inputmode="decimal" id="hoursWorked" class="atelier-input numeric-input w-full mt-2 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" placeholder="80">
-                                    </div>
-                                </div>
-                                 <div class="mt-4 bg-brand-bg p-3 rounded-lg text-center">
-                                    <p class="text-sm text-brand-text">Custo Fixo por Hora do Ateliê:</p>
-                                    <p id="fixedCostPerHour" class="text-lg font-bold text-brand-text">R$ 0,00</p>
-                                </div>
-                            </section>
-                            <section class="bg-white p-6 rounded-2xl shadow-lg shadow-brand-olive/20">
-                                <h2 class="font-display text-2xl text-brand-text mb-4 flex items-center">
-                                    <span class="text-3xl mr-3">2.</span> Custos da Peça
-                                </h2>
-                                <div>
-                                    <label for="pieceName" class="block text-sm font-medium text-brand-text">Nome da Peça</label>
-                                    <p class="text-xs text-gray-500 mt-1">Dê um nome para este cálculo (Ex: Jogo Americano Floral).</p>
-                                    <input type="text" id="pieceName" class="piece-input w-full mt-2 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" placeholder="Jogo Americano Floral">
-                                </div>
-                                <h3 class="font-display text-lg font-semibold text-brand-text mt-6 mb-2">A. Custo dos Materiais</h3>
-                                <div id="materialsContainer" class="space-y-4"></div>
-                                <button id="addMaterial" class="mt-4 text-sm text-brand-primary hover:text-brand-text font-medium">+ Adicionar Material</button>
-                                <div class="mt-4 text-right bg-gray-50 p-2 rounded-md">
-                                    <span class="font-medium text-gray-600">Subtotal de Materiais:</span>
-                                    <span id="materialsSubtotal" class="font-bold text-gray-800 ml-2">R$ 0,00</span>
-                                </div>
-                                <h3 class="font-display text-lg font-semibold text-brand-text mt-6 mb-2">B. Custo da Mão de Obra</h3>
-                                <div id="tasksContainer" class="space-y-4"></div>
-                                <button id="addTask" class="mt-4 text-sm text-brand-primary hover:text-brand-text font-medium">+ Adicionar Tarefa</button>
-                                <div class="mt-4 text-right bg-gray-50 p-2 rounded-md">
-                                    <span class="font-medium text-gray-600">Tempo Total de Produção:</span>
-                                    <span id="totalTime" class="font-bold text-gray-800 ml-2">0 min</span>
-                                </div>
-                            </section>
-                            <section class="bg-white p-6 rounded-2xl shadow-lg shadow-brand-olive/20">
-                                <h2 class="font-display text-2xl text-brand-text mb-4 flex items-center">
-                                   <span class="text-3xl mr-3">3.</span> Resumo dos Custos
-                                </h2>
-                                <div class="space-y-3">
-                                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-md">
-                                        <span class="font-medium text-gray-600">Custo Total de Materiais</span>
-                                        <span id="summaryMaterials" class="font-bold text-lg text-gray-800">R$ 0,00</span>
-                                    </div>
-                                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-md">
-                                        <span class="font-medium text-gray-600">Custo Total da Mão de Obra</span>
-                                        <span id="summaryLabor" class="font-bold text-lg text-gray-800">R$ 0,00</span>
-                                    </div>
-                                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-md">
-                                        <span class="font-medium text-gray-600">Custo Fixo da Peça</span>
-                                        <span id="summaryFixed" class="font-bold text-lg text-gray-800">R$ 0,00</span>
-                                    </div>
-                                    <div class="flex justify-between items-center bg-brand-olive/20 p-4 rounded-lg mt-2">
-                                        <span class="font-bold text-brand-text text-lg">CUSTO DE PRODUÇÃO DA PEÇA</span>
-                                        <span id="productionCost" class="font-extrabold text-2xl text-brand-text">R$ 0,00</span>
-                                    </div>
-                                </div>
-                            </section>
-                            <section class="bg-white p-6 rounded-2xl shadow-lg shadow-brand-olive/20">
-                                <h2 class="font-display text-2xl text-brand-text mb-4 flex items-center">
-                                    <span class="text-3xl mr-3">4.</span> Preço Final de Venda
-                                </h2>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
-                                    <div>
-                                        <label for="profitMargin" class="block text-sm font-medium text-brand-text">Sua Margem de Lucro (%)</label>
-                                        <p class="text-xs text-gray-500 mt-1">Quanto você quer lucrar sobre o custo. 100% é um bom começo.</p>
-                                        <input type="text" inputmode="decimal" id="profitMargin" class="numeric-input piece-input w-full mt-2 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" placeholder="100">
-                                    </div>
-                                    <div>
-                                        <label for="fees" class="block text-sm font-medium text-brand-text">Taxas (%)</label>
-                                        <p class="text-xs text-gray-500 mt-1">Taxas de cartão, marketplace, etc.</p>
-                                        <input type="text" inputmode="decimal" id="fees" class="numeric-input piece-input w-full mt-2 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" placeholder="5">
-                                    </div>
-                                </div>
-                                <div class="mt-6 space-y-4">
-                                    <div class="bg-brand-primary text-white p-6 rounded-2xl text-center">
-                                        <p class="font-semibold text-lg opacity-90">PREÇO DE VENDA FINAL (SUGERIDO)</p>
-                                        <p id="finalPrice" class="font-extrabold text-5xl tracking-tight">R$ 0,00</p>
-                                    </div>
-                                    <div class="bg-brand-pink/30 border-l-4 border-brand-pink text-brand-text p-4 rounded-r-lg">
-                                        <div class="flex justify-between items-center">
-                                            <p class="font-bold text-lg">LUCRO LÍQUIDO POR PEÇA:</p>
-                                            <p id="netProfit" class="font-bold text-2xl">R$ 0,00</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </section>
-                            <section class="bg-white p-6 rounded-2xl shadow-lg shadow-brand-olive/20">
-                                <h2 class="font-display text-2xl text-brand-text mb-4 flex items-center">
-                                   <span class="text-3xl mr-3">5.</span> Assistente de Vendas IA ✨
-                                </h2>
-                                <p class="text-gray-600 mb-6">Use a inteligência artificial para criar textos de venda e ter ideias para divulgar seu produto. Preencha os dados da peça acima e clique nos botões abaixo.</p>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <h3 class="font-display text-lg font-semibold text-brand-text">Descrição Mágica para Redes Sociais</h3>
-                                        <button id="generateDescription" class="w-full mt-2 bg-brand-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-brand-text transition-colors flex items-center justify-center">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
-                                            Gerar Descrição
-                                        </button>
-                                        <div id="descriptionLoader" class="loader hidden"></div>
-                                        <div id="descriptionResult" class="mt-4 p-4 bg-gray-50 rounded-md text-gray-700 whitespace-pre-wrap min-h-[100px] border">
-                                            ✨ Clique em 'Gerar Descrição' e veja a mágica acontecer! Criaremos um texto de venda encantador para sua peça.
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <h3 class="font-display text-lg font-semibold text-brand-text">Ideias Criativas para Vender Mais</h3>
-                                        <button id="generateSuggestions" class="w-full mt-2 bg-brand-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-brand-text transition-colors flex items-center justify-center">
-                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.121-3.536a1 1 0 011.414 0l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 010-1.414zM4.95 16.464l.707-.707a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414zm-3.536-2.121a1 1 0 010-1.414l.707-.707a1 1 0 011.414 1.414l-.707.707a1 1 0 01-1.414 0zM10 18a1 1 0 01-1-1v-1a1 1 0 112 0v1a1 1 0 01-1 1z" clip-rule="evenodd" /></svg>
-                                            Gerar Ideias
-                                        </button>
-                                        <div id="suggestionsLoader" class="loader hidden"></div>
-                                        <div id="suggestionsResult" class="mt-4 p-4 bg-gray-50 rounded-md text-gray-700 whitespace-pre-wrap min-h-[100px] border">
-                                            💡 Sem inspiração? Clique em 'Gerar Ideias' para descobrir novas formas de divulgar e vender seu produto!
-                                        </div>
-                                    </div>
-                                </div>
-                            </section>
-                        </main>
-                    </div>
-                    
-                    <!-- Telas "Em Breve" -->
-                    <div id="myPiecesView" class="hidden text-center">
-                        <h1 class="font-display text-3xl text-brand-text mb-4">Minhas Peças Salvas</h1>
-                        <p class="text-lg text-gray-600">Esta funcionalidade está sendo preparada com muito carinho e estará disponível em breve!</p>
-                    </div>
-                    <div id="managementView" class="hidden text-center">
-                        <h1 class="font-display text-3xl text-brand-text mb-4">Gestão de Encomendas</h1>
-                        <p class="text-lg text-gray-600">Esta funcionalidade está sendo preparada com muito carinho e estará disponível em breve!</p>
-                    </div>
-                    <div id="stockView" class="hidden text-center">
-                        <h1 class="font-display text-3xl text-brand-text mb-4">Controle de Estoque</h1>
-                        <p class="text-lg text-gray-600">Esta funcionalidade está sendo preparada com muito carinho e estará disponível em breve!</p>
-                    </div>
-
+                    <!-- Páginas do App serão inseridas aqui -->
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Templates das Páginas do App -->
+    <template id="dashboard-template">
+        <div id="dashboardView">
+            <h1 class="font-display text-3xl text-brand-text mb-2">Bem-vinda, Artesã!</h1>
+            <p id="welcomeMessage" class="text-lg text-gray-600 mb-8">Aqui você encontra as ferramentas para florescer seu ateliê.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <a href="#calculator" class="nav-link bg-white p-6 rounded-2xl shadow-lg shadow-brand-olive/20 hover:shadow-xl transition-shadow">
+                    <h2 class="font-display text-xl text-brand-primary">Calculadora F.L.O.R.A.</h2>
+                    <p class="mt-2 text-sm">Calcule o preço justo de suas peças com confiança e garanta seu lucro.</p>
+                </a>
+                <a href="#my-pieces" class="nav-link bg-white p-6 rounded-2xl shadow-lg shadow-brand-olive/20 hover:shadow-xl transition-shadow">
+                    <h2 class="font-display text-xl text-brand-primary">Minhas Peças Salvas</h2>
+                    <p class="mt-2 text-sm">Acesse seu catálogo de produtos com preços já calculados.</p>
+                </a>
+                <a href="#management" class="nav-link bg-white p-6 rounded-2xl shadow-lg shadow-brand-olive/20 opacity-50 cursor-not-allowed">
+                    <h2 class="font-display text-xl text-brand-text">Gestão de Encomendas</h2>
+                    <p class="mt-2 text-sm">Organize seus pedidos e acompanhe o status de cada um. (Em breve)</p>
+                </a>
+                <a href="#stock" class="nav-link bg-white p-6 rounded-2xl shadow-lg shadow-brand-olive/20 opacity-50 cursor-not-allowed">
+                    <h2 class="font-display text-xl text-brand-text">Controle de Estoque</h2>
+                    <p class="mt-2 text-sm">Saiba exatamente quais materiais você tem e quando precisa comprar mais. (Em breve)</p>
+                </a>
+            </div>
+        </div>
+    </template>
+
+    <template id="calculator-template">
+        <div id="calculatorView">
+            <main class="space-y-8">
+                <div id="restoreBanner" class="hidden bg-brand-olive/20 p-4 rounded-lg flex items-center justify-between">
+                    <p class="text-brand-text font-medium">Encontramos um cálculo não salvo. Deseja restaurá-lo?</p>
+                    <div>
+                        <button id="restoreYes" class="bg-brand-primary text-white px-3 py-1 rounded-md text-sm font-semibold mr-2">Sim</button>
+                        <button id="restoreNo" class="bg-gray-300 text-gray-700 px-3 py-1 rounded-md text-sm">Não</button>
+                    </div>
+                </div>
+                <section class="bg-white p-6 rounded-2xl shadow-lg shadow-brand-olive/20">
+                    <h2 class="font-display text-2xl text-brand-text mb-4 flex items-center">
+                        <span class="text-3xl mr-3">1.</span> Custos da Peça
+                    </h2>
+                    <div>
+                        <label for="pieceName" class="block text-sm font-medium text-brand-text">Nome da Peça</label>
+                        <p class="text-xs text-gray-500 mt-1">Dê um nome para este cálculo (Ex: Jogo Americano Floral).</p>
+                        <input type="text" id="pieceName" class="piece-input w-full mt-2 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" placeholder="Jogo Americano Floral">
+                    </div>
+                    <h3 class="font-display text-lg font-semibold text-brand-text mt-6 mb-2">A. Custo dos Materiais</h3>
+                    <div id="materialsContainer" class="space-y-4"></div>
+                    <button id="addMaterial" class="mt-4 text-sm text-brand-primary hover:text-brand-text font-medium">+ Adicionar Material</button>
+                    <div class="mt-4 text-right bg-gray-50 p-2 rounded-md">
+                        <span class="font-medium text-gray-600">Subtotal de Materiais:</span>
+                        <span id="materialsSubtotal" class="font-bold text-gray-800 ml-2">R$ 0,00</span>
+                    </div>
+                    <h3 class="font-display text-lg font-semibold text-brand-text mt-6 mb-2">B. Custo da Mão de Obra</h3>
+                    <div id="tasksContainer" class="space-y-4"></div>
+                    <button id="addTask" class="mt-4 text-sm text-brand-primary hover:text-brand-text font-medium">+ Adicionar Tarefa</button>
+                    <div class="mt-4 text-right bg-gray-50 p-2 rounded-md">
+                        <span class="font-medium text-gray-600">Tempo Total de Produção:</span>
+                        <span id="totalTime" class="font-bold text-gray-800 ml-2">0 min</span>
+                    </div>
+                </section>
+                <section class="bg-white p-6 rounded-2xl shadow-lg shadow-brand-olive/20">
+                    <h2 class="font-display text-2xl text-brand-text mb-4 flex items-center">
+                       <span class="text-3xl mr-3">2.</span> Resumo dos Custos
+                    </h2>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center bg-gray-50 p-3 rounded-md">
+                            <span class="font-medium text-gray-600">Custo Total de Materiais</span>
+                            <span id="summaryMaterials" class="font-bold text-lg text-gray-800">R$ 0,00</span>
+                        </div>
+                        <div class="flex justify-between items-center bg-gray-50 p-3 rounded-md">
+                            <span class="font-medium text-gray-600">Custo Total da Mão de Obra</span>
+                            <span id="summaryLabor" class="font-bold text-lg text-gray-800">R$ 0,00</span>
+                        </div>
+                        <div class="flex justify-between items-center bg-gray-50 p-3 rounded-md">
+                            <span class="font-medium text-gray-600">Custo Fixo da Peça</span>
+                            <span id="summaryFixed" class="font-bold text-lg text-gray-800">R$ 0,00</span>
+                        </div>
+                        <div class="flex justify-between items-center bg-brand-olive/20 p-4 rounded-lg mt-2">
+                            <span class="font-bold text-brand-text text-lg">CUSTO DE PRODUÇÃO DA PEÇA</span>
+                            <span id="productionCost" class="font-extrabold text-2xl text-brand-text">R$ 0,00</span>
+                        </div>
+                    </div>
+                </section>
+                <section class="bg-white p-6 rounded-2xl shadow-lg shadow-brand-olive/20">
+                    <h2 class="font-display text-2xl text-brand-text mb-4 flex items-center">
+                        <span class="text-3xl mr-3">3.</span> Preço Final de Venda
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
+                        <div>
+                            <label for="profitMargin" class="block text-sm font-medium text-brand-text">Sua Margem de Lucro (%)</label>
+                            <p class="text-xs text-gray-500 mt-1">Quanto você quer lucrar sobre o custo. 100% é um bom começo.</p>
+                            <input type="text" inputmode="decimal" id="profitMargin" class="numeric-input piece-input w-full mt-2 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" placeholder="100">
+                        </div>
+                        <div>
+                            <label for="fees" class="block text-sm font-medium text-brand-text">Taxas (%)</label>
+                            <p class="text-xs text-gray-500 mt-1">Taxas de cartão, marketplace, etc.</p>
+                            <input type="text" inputmode="decimal" id="fees" class="numeric-input piece-input w-full mt-2 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" placeholder="5">
+                        </div>
+                    </div>
+                    <div class="mt-6 space-y-4">
+                        <div class="bg-brand-primary text-white p-6 rounded-2xl text-center">
+                            <p class="font-semibold text-lg opacity-90">PREÇO DE VENDA FINAL (SUGERIDO)</p>
+                            <p id="finalPrice" class="font-extrabold text-5xl tracking-tight">R$ 0,00</p>
+                        </div>
+                        <div class="bg-brand-pink/30 border-l-4 border-brand-pink text-brand-text p-4 rounded-r-lg">
+                            <div class="flex justify-between items-center">
+                                <p class="font-bold text-lg">LUCRO LÍQUIDO POR PEÇA:</p>
+                                <p id="netProfit" class="font-bold text-2xl">R$ 0,00</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <div class="bg-white p-6 rounded-2xl shadow-lg shadow-brand-olive/20">
+                    <button id="savePieceButton" class="w-full bg-brand-olive text-white font-bold py-3 px-4 rounded-lg hover:bg-brand-text transition-colors flex items-center justify-center text-lg">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+                        Salvar Peça no Catálogo
+                    </button>
+                </div>
+                <section class="bg-white p-6 rounded-2xl shadow-lg shadow-brand-olive/20">
+                    <h2 class="font-display text-2xl text-brand-text mb-4 flex items-center">
+                       <span class="text-3xl mr-3">4.</span> Assistente de Vendas IA ✨
+                    </h2>
+                    <p class="text-gray-600 mb-6">Use a inteligência artificial para criar textos de venda e ter ideias para divulgar seu produto. Preencha os dados da peça acima e clique nos botões abaixo.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="font-display text-lg font-semibold text-brand-text">Descrição Mágica para Redes Sociais</h3>
+                            <button id="generateDescription" class="w-full mt-2 bg-brand-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-brand-text transition-colors flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                                Gerar Descrição
+                            </button>
+                            <div id="descriptionLoader" class="loader hidden"></div>
+                            <div id="descriptionResult" class="mt-4 p-4 bg-gray-50 rounded-md text-gray-700 whitespace-pre-wrap min-h-[100px] border">
+                                ✨ Clique em 'Gerar Descrição' e veja a mágica acontecer! Criaremos um texto de venda encantador para sua peça.
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="font-display text-lg font-semibold text-brand-text">Ideias Criativas para Vender Mais</h3>
+                            <button id="generateSuggestions" class="w-full mt-2 bg-brand-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-brand-text transition-colors flex items-center justify-center">
+                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.121-3.536a1 1 0 011.414 0l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 010-1.414zM4.95 16.464l.707-.707a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414zm-3.536-2.121a1 1 0 010-1.414l.707-.707a1 1 0 011.414 1.414l-.707.707a1 1 0 01-1.414 0zM10 18a1 1 0 01-1-1v-1a1 1 0 112 0v1a1 1 0 01-1 1z" clip-rule="evenodd" /></svg>
+                                Gerar Ideias
+                            </button>
+                            <div id="suggestionsLoader" class="loader hidden"></div>
+                            <div id="suggestionsResult" class="mt-4 p-4 bg-gray-50 rounded-md text-gray-700 whitespace-pre-wrap min-h-[100px] border">
+                                💡 Sem inspiração? Clique em 'Gerar Ideias' para descobrir novas formas de divulgar e vender seu produto!
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </template>
+    
+    <template id="my-pieces-template">
+        <div id="myPiecesView">
+            <h1 class="font-display text-3xl text-brand-text mb-8">Minhas Peças Salvas</h1>
+            <div id="savedPiecesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Cards de peças salvas serão inseridos aqui -->
+            </div>
+            <div id="noPiecesMessage" class="hidden text-center mt-8">
+                <p class="text-lg text-gray-600">Você ainda não salvou nenhuma peça.</p>
+                <a href="#calculator" class="nav-link mt-4 inline-block bg-brand-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-brand-text transition-colors">Calcular minha primeira peça</a>
+            </div>
+        </div>
+    </template>
+
+    <template id="settings-template">
+        <div id="settingsView">
+            <h1 class="font-display text-3xl text-brand-text mb-8">Configurações</h1>
+            <div class="space-y-8">
+                <section class="bg-white p-6 rounded-2xl shadow-lg shadow-brand-olive/20">
+                    <h2 class="font-display text-2xl text-brand-text mb-4">Meu Perfil</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="profileName" class="block text-sm font-medium text-brand-text">Seu Nome</label>
+                            <input type="text" id="profileName" class="w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm">
+                        </div>
+                        <div>
+                            <label for="profileEmail" class="block text-sm font-medium text-brand-text">Email</label>
+                            <input type="email" id="profileEmail" disabled class="w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm bg-gray-100 cursor-not-allowed">
+                        </div>
+                        <button id="saveProfileButton" class="bg-brand-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-brand-text transition-colors">Salvar Perfil</button>
+                    </div>
+                </section>
+                <section class="bg-white p-6 rounded-2xl shadow-lg shadow-brand-olive/20">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="font-display text-2xl text-brand-text">Dados do Ateliê</h2>
+                        <span id="settingsStatus" class="saved-status text-sm font-medium text-brand-olive opacity-0 flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            <span>Salvo!</span>
+                        </span>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="settingsHourlyRate" class="block text-sm font-medium text-brand-text">Valor da sua Hora de Trabalho</label>
+                            <div class="relative mt-1 input-group">
+                                <span class="input-prefix">R$</span>
+                                <input type="text" inputmode="decimal" id="settingsHourlyRate" class="settings-input numeric-input w-full p-2 border border-gray-300 rounded-md shadow-sm" placeholder="20,00">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="settingsFixedCosts" class="block text-sm font-medium text-brand-text">Custos Fixos Mensais</label>
+                            <div class="relative mt-1 input-group">
+                                 <span class="input-prefix">R$</span>
+                                <input type="text" inputmode="decimal" id="settingsFixedCosts" class="settings-input numeric-input w-full p-2 border border-gray-300 rounded-md shadow-sm" placeholder="300,00">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="settingsHoursWorked" class="block text-sm font-medium text-brand-text">Horas Trabalhadas por Mês</label>
+                            <input type="text" inputmode="decimal" id="settingsHoursWorked" class="settings-input numeric-input w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm" placeholder="80">
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </template>
+    
+    <template id="coming-soon-template">
+        <div class="text-center">
+            <h1 class="font-display text-3xl text-brand-text mb-4">Em Breve</h1>
+            <p class="text-lg text-gray-600">Esta funcionalidade está sendo preparada com muito carinho e estará disponível em breve!</p>
+        </div>
+    </template>
+
     <!-- Modal de Boas-vindas -->
     <div id="welcomeModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl p-8 max-w-lg w-full text-center shadow-xl">
             <h2 class="font-display text-2xl text-brand-primary mb-4">Seja bem-vinda, artesã!</h2>
-            <p class="text-brand-text mb-6">Ficamos felizes em te ver por aqui! Para começar a usar sua calculadora, o primeiro passo é configurar os dados base do seu ateliê. É rapidinho e você só precisa fazer isso uma vez!</p>
-            <button id="closeWelcomeModal" class="w-full bg-brand-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-brand-text transition-colors">Vamos lá!</button>
+            <p class="text-brand-text mb-6">Ficamos felizes em te ver por aqui! Para começar, o primeiro passo é configurar os dados base do seu ateliê na página de Configurações.</p>
+            <button id="closeWelcomeModal" class="w-full bg-brand-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-brand-text transition-colors">Ir para Configurações</button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, addDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         async function getFirebaseConfig() {
             try {
@@ -330,9 +402,9 @@
         }
 
         async function main() {
-            const loginView = document.getElementById('loginView');
+            const authContainer = document.getElementById('authContainer');
             const appView = document.getElementById('appView');
-            const errorMessageDiv = document.getElementById('errorMessage');
+            const errorMessageDiv = document.getElementById('loginErrorMessage');
 
             const firebaseConfig = await getFirebaseConfig();
             if (!firebaseConfig) {
@@ -344,64 +416,93 @@
             const app = initializeApp(firebaseConfig);
             const auth = getAuth(app);
             const db = getFirestore(app);
-
-            const loginButton = document.getElementById('loginButton');
-            const registerButton = document.getElementById('registerButton');
-            const emailInput = document.getElementById('email');
-            const passwordInput = document.getElementById('password');
-            const logoutButton = document.getElementById('logoutButton');
             
             let currentUser = null;
             let atelierDataRef = null;
+            let piecesCollectionRef = null;
 
             onAuthStateChanged(auth, (user) => {
                 if (user) {
                     currentUser = user;
                     atelierDataRef = doc(db, "atelierData", currentUser.uid);
-                    loginView.classList.add('hidden');
+                    piecesCollectionRef = collection(db, "atelierData", currentUser.uid, "pieces");
+                    authContainer.classList.add('hidden');
                     appView.classList.remove('hidden');
                     loadUserData();
                 } else {
                     currentUser = null;
                     atelierDataRef = null;
-                    loginView.classList.remove('hidden');
+                    piecesCollectionRef = null;
+                    authContainer.classList.remove('hidden');
                     appView.classList.add('hidden');
                 }
             });
 
-            function showAuthError(message) {
-                errorMessageDiv.textContent = message;
-                errorMessageDiv.classList.remove('hidden');
-            }
+            // Lógica de Autenticação e Troca de Tela
+            const loginView = document.getElementById('loginView');
+            const registerView = document.getElementById('registerView');
+            const showRegisterViewLink = document.getElementById('showRegisterViewLink');
+            const showLoginViewLink = document.getElementById('showLoginViewLink');
 
-            loginButton.addEventListener('click', (e) => {
+            showRegisterViewLink.addEventListener('click', (e) => {
                 e.preventDefault();
-                signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value)
+                loginView.classList.add('hidden');
+                registerView.classList.remove('hidden');
+            });
+
+            showLoginViewLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                registerView.classList.add('hidden');
+                loginView.classList.remove('hidden');
+            });
+            
+            document.getElementById('loginButton').addEventListener('click', (e) => {
+                e.preventDefault();
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+                signInWithEmailAndPassword(auth, email, password)
                     .catch((error) => {
-                        showAuthError(error.code === 'auth/invalid-credential' ? "Email ou senha inválidos." : "Ocorreu um erro ao entrar.");
+                        document.getElementById('loginErrorMessage').textContent = 'Email ou senha inválidos.';
+                        document.getElementById('loginErrorMessage').classList.remove('hidden');
                     });
             });
 
-            registerButton.addEventListener('click', (e) => {
+            document.getElementById('registerButton').addEventListener('click', (e) => {
                 e.preventDefault();
-                if (passwordInput.value.length < 6) {
-                    showAuthError("A senha deve ter pelo menos 6 caracteres."); return;
+                const name = document.getElementById('registerName').value;
+                const email = document.getElementById('registerEmail').value;
+                const password = document.getElementById('registerPassword').value;
+                const registerErrorDiv = document.getElementById('registerErrorMessage');
+
+                if (!name) {
+                    registerErrorDiv.textContent = 'Por favor, insira seu nome.';
+                    registerErrorDiv.classList.remove('hidden');
+                    return;
                 }
-                createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value)
-                    .then(() => alert("Cadastro realizado com sucesso!"))
+                if (password.length < 6) {
+                    registerErrorDiv.textContent = 'A senha deve ter pelo menos 6 caracteres.';
+                    registerErrorDiv.classList.remove('hidden');
+                    return;
+                }
+                
+                createUserWithEmailAndPassword(auth, email, password)
+                    .then(async (userCredential) => {
+                        await updateProfile(userCredential.user, { displayName: name });
+                        await setDoc(doc(db, "atelierData", userCredential.user.uid), { name: name }, { merge: true });
+                        alert("Cadastro realizado com sucesso!");
+                    })
                     .catch((error) => {
-                        showAuthError(error.code === 'auth/email-already-in-use' ? "Este email já está cadastrado." : "Ocorreu um erro ao cadastrar.");
+                        registerErrorDiv.textContent = error.code === 'auth/email-already-in-use' ? "Este email já está cadastrado." : "Ocorreu um erro ao cadastrar.";
+                        registerErrorDiv.classList.remove('hidden');
                     });
             });
             
-            logoutButton.addEventListener('click', () => {
+            document.getElementById('logoutButton').addEventListener('click', () => {
                 signOut(auth).catch((error) => console.error("Erro ao sair:", error));
             });
 
-            const atelierInputs = document.querySelectorAll('.atelier-input');
-            const statusIndicator = document.getElementById('atelierDataStatus');
-            const statusText = document.getElementById('statusText');
-            const statusIcon = document.getElementById('statusIcon');
+            const settingsInputs = document.querySelectorAll('.settings-input');
+            const statusIndicator = document.getElementById('settingsStatus');
             let saveTimeout = null;
 
             async function loadUserData() {
@@ -410,10 +511,12 @@
                     const docSnap = await getDoc(atelierDataRef);
                     if (docSnap.exists()) {
                         const data = docSnap.data();
-                        document.getElementById('hourlyRate').value = data.hourlyRate || '';
-                        document.getElementById('fixedCosts').value = data.fixedCosts || '';
-                        document.getElementById('hoursWorked').value = data.hoursWorked || '';
-                        document.getElementById('welcomeMessage').textContent = `Bem-vinda, ${currentUser.email.split('@')[0]}!`;
+                        document.getElementById('settingsHourlyRate').value = data.hourlyRate || '';
+                        document.getElementById('settingsFixedCosts').value = data.fixedCosts || '';
+                        document.getElementById('settingsHoursWorked').value = data.hoursWorked || '';
+                        document.getElementById('profileName').value = currentUser.displayName || '';
+                        document.getElementById('profileEmail').value = currentUser.email || '';
+                        document.getElementById('welcomeMessage').textContent = `Bem-vinda, ${currentUser.displayName || 'Artesã'}!`;
                         if (!data.hasLoggedInBefore) {
                             document.getElementById('welcomeModal').classList.remove('hidden');
                         }
@@ -421,7 +524,6 @@
                     } else {
                         document.getElementById('welcomeModal').classList.remove('hidden');
                     }
-                    calculateAll();
                 } catch (error) {
                     console.error("Erro ao carregar dados do ateliê:", error);
                 }
@@ -430,17 +532,16 @@
             function saveAtelierData(isFirstSave = false) {
                 if (!atelierDataRef) return;
                 const data = {
-                    hourlyRate: document.getElementById('hourlyRate').value,
-                    fixedCosts: document.getElementById('fixedCosts').value,
-                    hoursWorked: document.getElementById('hoursWorked').value,
+                    hourlyRate: document.getElementById('settingsHourlyRate').value,
+                    fixedCosts: document.getElementById('settingsFixedCosts').value,
+                    hoursWorked: document.getElementById('settingsHoursWorked').value,
                 };
                 if (isFirstSave) {
                     data.hasLoggedInBefore = true;
                 }
                 setDoc(atelierDataRef, data, { merge: true })
                     .then(() => {
-                        statusText.textContent = 'Salvo na nuvem!';
-                        statusIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>`;
+                        statusIndicator.querySelector('span').textContent = 'Salvo na nuvem!';
                         statusIndicator.classList.remove('text-yellow-600');
                         statusIndicator.classList.add('text-brand-olive');
                         statusIndicator.style.opacity = '1';
@@ -448,29 +549,45 @@
                     })
                     .catch((error) => {
                         console.error("Erro ao salvar dados:", error);
-                        statusText.textContent = 'Erro ao salvar!';
+                        statusIndicator.querySelector('span').textContent = 'Erro ao salvar!';
                         statusIndicator.classList.add('text-red-500');
                         statusIndicator.style.opacity = '1';
                     });
             }
             
-            atelierInputs.forEach(input => {
+            settingsInputs.forEach(input => {
                 input.addEventListener('input', () => {
                     clearTimeout(saveTimeout);
-                    statusText.textContent = 'Salvando...';
-                    statusIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>`;
+                    statusIndicator.querySelector('span').textContent = 'Salvando...';
                     statusIndicator.classList.remove('text-brand-olive');
                     statusIndicator.classList.add('text-yellow-600');
                     statusIndicator.style.opacity = '1';
                     saveTimeout = setTimeout(() => saveAtelierData(), 1500);
                 });
             });
+            
+            document.getElementById('saveProfileButton').addEventListener('click', async () => {
+                const newName = document.getElementById('profileName').value;
+                if (!newName) {
+                    alert('O nome não pode ficar em branco.');
+                    return;
+                }
+                try {
+                    await updateProfile(currentUser, { displayName: newName });
+                    await setDoc(atelierDataRef, { name: newName }, { merge: true });
+                    document.getElementById('welcomeMessage').textContent = `Bem-vinda, ${newName}!`;
+                    alert('Perfil atualizado com sucesso!');
+                } catch (error) {
+                    console.error("Erro ao atualizar perfil:", error);
+                    alert('Ocorreu um erro ao atualizar seu perfil.');
+                }
+            });
 
             const welcomeModal = document.getElementById('welcomeModal');
-            const closeWelcomeModalBtn = document.getElementById('closeWelcomeModal');
-            closeWelcomeModalBtn.addEventListener('click', () => {
+            document.getElementById('closeWelcomeModal').addEventListener('click', () => {
                 welcomeModal.classList.add('hidden');
                 saveAtelierData(true);
+                navigate('#settings');
             });
 
             const formatCurrency = (value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
@@ -522,9 +639,9 @@
                 addTaskBtn.addEventListener('click', () => addTaskRow());
 
                 const calculateAll = () => {
-                    const hourlyRate = parseFloat(document.getElementById('hourlyRate').value.replace(',', '.')) || 0;
-                    const fixedCosts = parseFloat(document.getElementById('fixedCosts').value.replace(',', '.')) || 0;
-                    const hoursWorked = parseFloat(document.getElementById('hoursWorked').value.replace(',', '.')) || 0;
+                    const hourlyRate = parseFloat(document.getElementById('settingsHourlyRate').value.replace(',', '.')) || 0;
+                    const fixedCosts = parseFloat(document.getElementById('settingsFixedCosts').value.replace(',', '.')) || 0;
+                    const hoursWorked = parseFloat(document.getElementById('settingsHoursWorked').value.replace(',', '.')) || 0;
                     const fixedCostPerHour = hoursWorked > 0 ? fixedCosts / hoursWorked : 0;
                     document.getElementById('fixedCostPerHour').textContent = formatCurrency(fixedCostPerHour);
 
@@ -569,7 +686,7 @@
                         const parts = value.split('.');
                         if (parts.length > 2) value = parts[0] + '.' + parts.slice(1).join('');
                         e.target.value = value;
-                        if (!inputElement.classList.contains('atelier-input')) calculateAll();
+                        if (!inputElement.classList.contains('settings-input')) calculateAll();
                     });
                 }
                 
@@ -586,7 +703,7 @@
                 observer.observe(materialsContainer, { childList: true });
                 observer.observe(tasksContainer, { childList: true });
                 
-                document.querySelectorAll('.atelier-input').forEach(input => {
+                document.querySelectorAll('.settings-input').forEach(input => {
                     input.addEventListener('input', calculateAll);
                 });
 
@@ -675,20 +792,113 @@
                     }
                 });
                 
+                // --- Lógica de "Minhas Peças Salvas" ---
+                const savePieceButton = document.getElementById('savePieceButton');
+                const savedPiecesContainer = document.getElementById('savedPiecesContainer');
+                const noPiecesMessage = document.getElementById('noPiecesMessage');
+
+                savePieceButton.addEventListener('click', async () => {
+                    const pieceName = document.getElementById('pieceName').value;
+                    if (!pieceName) {
+                        alert('Por favor, dê um nome à sua peça antes de salvar.');
+                        return;
+                    }
+                    const pieceData = JSON.parse(localStorage.getItem('unsavedPiece'));
+                    pieceData.createdAt = new Date();
+                    pieceData.finalPrice = document.getElementById('finalPrice').textContent;
+                    
+                    try {
+                        await addDoc(piecesCollectionRef, pieceData);
+                        alert(`Peça "${pieceName}" salva com sucesso!`);
+                        localStorage.removeItem('unsavedPiece');
+                        document.getElementById('pieceName').value = '';
+                        materialsContainer.innerHTML = '';
+                        tasksContainer.innerHTML = '';
+                        addMaterialRow();
+                        addTaskRow();
+                        calculateAll();
+                    } catch (error) {
+                        console.error("Erro ao salvar peça:", error);
+                        alert("Ocorreu um erro ao salvar sua peça. Tente novamente.");
+                    }
+                });
+
+                async function loadAndRenderSavedPieces() {
+                    if (!piecesCollectionRef) return;
+                    savedPiecesContainer.innerHTML = '<div class="loader"></div>';
+                    noPiecesMessage.classList.add('hidden');
+
+                    try {
+                        const querySnapshot = await getDocs(piecesCollectionRef);
+                        savedPiecesContainer.innerHTML = '';
+                        if (querySnapshot.empty) {
+                            noPiecesMessage.classList.remove('hidden');
+                        } else {
+                            querySnapshot.forEach(doc => {
+                                const piece = doc.data();
+                                const pieceId = doc.id;
+                                const card = document.createElement('div');
+                                card.classList.add('bg-white', 'p-4', 'rounded-lg', 'shadow-md', 'space-y-2');
+                                card.innerHTML = `
+                                    <h3 class="font-display text-lg text-brand-text font-bold">${piece.pieceName}</h3>
+                                    <p class="text-2xl font-bold text-brand-primary">${piece.finalPrice}</p>
+                                    <div class="flex gap-2 pt-2">
+                                        <button data-id="${pieceId}" class="load-piece-btn flex-1 bg-brand-olive text-white px-3 py-1 rounded-md text-sm font-semibold">Carregar</button>
+                                        <button data-id="${pieceId}" class="delete-piece-btn flex-1 bg-red-500 text-white px-3 py-1 rounded-md text-sm font-semibold">Excluir</button>
+                                    </div>
+                                `;
+                                savedPiecesContainer.appendChild(card);
+                            });
+                        }
+                    } catch (error) {
+                        console.error("Erro ao carregar peças:", error);
+                        savedPiecesContainer.innerHTML = '<p class="text-red-500">Não foi possível carregar suas peças.</p>';
+                    }
+                }
+                
+                savedPiecesContainer.addEventListener('click', async (e) => {
+                    const pieceId = e.target.dataset.id;
+                    if (!pieceId) return;
+
+                    if (e.target.classList.contains('delete-piece-btn')) {
+                        if (confirm('Tem certeza que deseja excluir esta peça?')) {
+                            try {
+                                await deleteDoc(doc(db, "atelierData", currentUser.uid, "pieces", pieceId));
+                                loadAndRenderSavedPieces();
+                            } catch (error) {
+                                alert('Erro ao excluir a peça.');
+                            }
+                        }
+                    } else if (e.target.classList.contains('load-piece-btn')) {
+                        try {
+                            const pieceDoc = await getDoc(doc(db, "atelierData", currentUser.uid, "pieces", pieceId));
+                            if (pieceDoc.exists()) {
+                                const pieceData = pieceDoc.data();
+                                localStorage.setItem('unsavedPiece', JSON.stringify(pieceData));
+                                navigate('#calculator');
+                                checkAndRestorePiece();
+                            }
+                        } catch (error) {
+                            alert('Erro ao carregar a peça.');
+                        }
+                    }
+                });
+
                 // --- Lógica de Navegação SPA ---
-                const navLinks = document.querySelectorAll('.nav-link');
-                const views = {
-                    dashboard: document.getElementById('dashboardView'),
-                    calculator: document.getElementById('calculatorView'),
-                    'my-pieces': document.getElementById('myPiecesView'),
-                    management: document.getElementById('managementView'),
-                    stock: document.getElementById('stockView')
+                const mainContent = document.getElementById('main-content');
+                const templates = {
+                    dashboard: document.getElementById('dashboard-template'),
+                    calculator: document.getElementById('calculator-template'),
+                    'my-pieces': document.getElementById('my-pieces-template'),
+                    settings: document.getElementById('settings-template'),
+                    management: document.getElementById('coming-soon-template'),
+                    stock: document.getElementById('coming-soon-template'),
                 };
 
                 function navigate(hash) {
                     const targetView = hash.substring(1); // remove #
                     
-                    navLinks.forEach(link => {
+                    document.querySelectorAll('.nav-link').forEach(link => {
                         if (link.hash === hash) {
                             link.classList.add('bg-brand-primary/20');
                         } else {
@@ -696,16 +906,45 @@
                         }
                     });
 
-                    Object.keys(views).forEach(key => {
-                        if (key === targetView) {
-                            views[key].classList.remove('hidden');
-                        } else {
-                            views[key].classList.add('hidden');
+                    const template = templates[targetView];
+                    if (template) {
+                        mainContent.innerHTML = '';
+                        mainContent.appendChild(template.content.cloneNode(true));
+                        // Re-executar scripts ou re-anexar listeners se necessário
+                        if (targetView === 'calculator') setupCalculator();
+                        if (targetView === 'my-pieces') loadAndRenderSavedPieces();
+                        if (targetView === 'settings') {
+                            // Preencher dados e anexar listener de salvar
+                            document.getElementById('profileName').value = currentUser.displayName || '';
+                            document.getElementById('profileEmail').value = currentUser.email || '';
+                            document.getElementById('saveProfileButton').addEventListener('click', async () => {
+                                const newName = document.getElementById('profileName').value;
+                                if (!newName) { alert('O nome não pode ficar em branco.'); return; }
+                                try {
+                                    await updateProfile(currentUser, { displayName: newName });
+                                    await setDoc(atelierDataRef, { name: newName }, { merge: true });
+                                    document.getElementById('welcomeMessage').textContent = `Bem-vinda, ${newName}!`;
+                                    alert('Perfil atualizado com sucesso!');
+                                } catch (error) {
+                                    console.error("Erro ao atualizar perfil:", error);
+                                    alert('Ocorreu um erro ao atualizar seu perfil.');
+                                }
+                            });
+                             document.querySelectorAll('.settings-input').forEach(input => {
+                                input.addEventListener('input', () => {
+                                    clearTimeout(saveTimeout);
+                                    statusIndicator.querySelector('span').textContent = 'Salvando...';
+                                    statusIndicator.classList.remove('text-brand-olive');
+                                    statusIndicator.classList.add('text-yellow-600');
+                                    statusIndicator.style.opacity = '1';
+                                    saveTimeout = setTimeout(() => saveAtelierData(), 1500);
+                                });
+                            });
                         }
-                    });
+                    }
                 }
 
-                navLinks.forEach(link => {
+                document.querySelectorAll('.nav-link').forEach(link => {
                     link.addEventListener('click', (e) => {
                         e.preventDefault();
                         const hash = e.currentTarget.hash;
@@ -714,7 +953,6 @@
                     });
                 });
                 
-                // --- Lógica da Barra Lateral ---
                 const sidebar = document.getElementById('sidebar');
                 const sidebarToggle = document.getElementById('sidebar-toggle');
                 const sidebarOverlay = document.getElementById('sidebar-overlay');
@@ -728,14 +966,10 @@
                     sidebarOverlay.classList.add('hidden');
                 });
                 
-                // Navegação inicial
                 navigate('#dashboard');
             }
 
-            setupCalculator();
-        }
-
-        main();
+            main();
     </script>
 </body>
 </html>

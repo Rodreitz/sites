@@ -685,6 +685,8 @@
                         tasksContainer.innerHTML = '';
                         addMaterialRow();
                         addTaskRow();
+                        calculatorNode.querySelector('#profitMargin').value = '100';
+                        calculatorNode.querySelector('#fees').value = '5';
                     }
                 }
 
@@ -734,15 +736,7 @@
                     try {
                         await addDoc(piecesCollectionRef, pieceData);
                         alert(`Peça "${pieceName}" salva com sucesso!`);
-                        localStorage.removeItem('unsavedPiece');
-                        calculatorNode.querySelector('#pieceName').value = '';
-                        calculatorNode.querySelector('#profitMargin').value = '';
-                        calculatorNode.querySelector('#fees').value = '';
-                        materialsContainer.innerHTML = '';
-                        tasksContainer.innerHTML = '';
-                        addMaterialRow();
-                        addTaskRow();
-                        calculateAll();
+                        // Não limpa os campos para o usuário continuar de onde parou
                     } catch (error) {
                         console.error("Erro ao salvar peça:", error);
                         alert("Ocorreu um erro ao salvar sua peça. Verifique as regras de segurança do Firestore.");

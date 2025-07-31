@@ -520,6 +520,7 @@
 
             document.getElementById('closeWelcomeModal').addEventListener('click', () => {
                 document.getElementById('welcomeModal').classList.add('hidden');
+                atelierData.hasLoggedInBefore = true;
                 setDoc(atelierDataRef, { hasLoggedInBefore: true }, { merge: true });
                 navigate('#settings');
             });
@@ -723,11 +724,9 @@
                         alert('Por favor, dê um nome à sua peça antes de salvar.');
                         return;
                     }
+                    savePieceToLocalStorage();
                     const pieceData = JSON.parse(localStorage.getItem('unsavedPiece'));
-                    if (!pieceData) {
-                        savePieceToLocalStorage();
-                        pieceData = JSON.parse(localStorage.getItem('unsavedPiece'));
-                    }
+                    
                     pieceData.createdAt = new Date();
                     pieceData.finalPrice = calculatorNode.querySelector('#finalPrice').textContent;
                     
@@ -745,7 +744,7 @@
                         calculateAll();
                     } catch (error) {
                         console.error("Erro ao salvar peça:", error);
-                        alert("Ocorreu um erro ao salvar sua peça. Tente novamente.");
+                        alert("Ocorreu um erro ao salvar sua peça. Verifique as regras de segurança do Firestore.");
                     }
                 });
             }

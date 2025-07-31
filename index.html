@@ -248,12 +248,12 @@
                         <div>
                             <label for="profitMargin" class="block text-sm font-medium text-brand-text">Sua Margem de Lucro (%)</label>
                             <p class="text-xs text-gray-500 mt-1">Quanto você quer lucrar sobre o custo. 100% é um bom começo.</p>
-                            <input type="text" inputmode="decimal" id="profitMargin" class="numeric-input piece-input w-full mt-2 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" placeholder="100">
+                            <input type="text" inputmode="decimal" id="profitMargin" class="numeric-input piece-input w-full mt-2 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" value="100">
                         </div>
                         <div>
                             <label for="fees" class="block text-sm font-medium text-brand-text">Taxas (%)</label>
                             <p class="text-xs text-gray-500 mt-1">Taxas de cartão, marketplace, etc.</p>
-                            <input type="text" inputmode="decimal" id="fees" class="numeric-input piece-input w-full mt-2 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" placeholder="5">
+                            <input type="text" inputmode="decimal" id="fees" class="numeric-input piece-input w-full mt-2 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary" value="5">
                         </div>
                     </div>
                     <div class="mt-6 space-y-4">
@@ -676,7 +676,7 @@
                     localStorage.setItem('unsavedPiece', JSON.stringify(data));
                 }
 
-                window.checkAndRestorePiece = function() {
+                function checkAndRestorePiece() {
                     const savedData = localStorage.getItem('unsavedPiece');
                     if (savedData) {
                         restoreBanner.classList.remove('hidden');
@@ -685,22 +685,24 @@
                         tasksContainer.innerHTML = '';
                         addMaterialRow();
                         addTaskRow();
-                        calculatorNode.querySelector('#profitMargin').value = '100';
-                        calculatorNode.querySelector('#fees').value = '5';
                     }
+                }
+
+                function loadPieceData(data) {
+                    calculatorNode.querySelector('#pieceName').value = data.pieceName || '';
+                    calculatorNode.querySelector('#profitMargin').value = data.profitMargin || '100';
+                    calculatorNode.querySelector('#fees').value = data.fees || '5';
+                    materialsContainer.innerHTML = '';
+                    tasksContainer.innerHTML = '';
+                    data.materials.forEach(m => addMaterialRow(m.name, m.price, m.quantity));
+                    data.tasks.forEach(t => addTaskRow(t.name, t.time));
+                    calculateAll();
                 }
 
                 calculatorNode.querySelector('#restoreYes').addEventListener('click', () => {
                     const savedData = JSON.parse(localStorage.getItem('unsavedPiece'));
                     if (savedData) {
-                        calculatorNode.querySelector('#pieceName').value = savedData.pieceName;
-                        calculatorNode.querySelector('#profitMargin').value = savedData.profitMargin;
-                        calculatorNode.querySelector('#fees').value = savedData.fees;
-                        materialsContainer.innerHTML = '';
-                        tasksContainer.innerHTML = '';
-                        savedData.materials.forEach(m => addMaterialRow(m.name, m.price, m.quantity));
-                        savedData.tasks.forEach(t => addTaskRow(t.name, t.time));
-                        calculateAll();
+                        loadPieceData(savedData);
                     }
                     localStorage.removeItem('unsavedPiece');
                     restoreBanner.classList.add('hidden');
@@ -736,12 +738,19 @@
                     try {
                         await addDoc(piecesCollectionRef, pieceData);
                         alert(`Peça "${pieceName}" salva com sucesso!`);
-                        // Não limpa os campos para o usuário continuar de onde parou
                     } catch (error) {
                         console.error("Erro ao salvar peça:", error);
-                        alert("Ocorreu um erro ao salvar sua peça. Verifique as regras de segurança do Firestore.");
+                        alert("Ocorreu um erro ao salvar sua peça.");
                     }
                 });
+                
+                const dataToLoad = localStorage.getItem('loadPieceData');
+                if (dataToLoad) {
+                    loadPieceData(JSON.parse(dataToLoad));
+                    localStorage.removeItem('loadPieceData');
+                } else {
+                    checkAndRestorePiece();
+                }
             }
 
             const mainContent = document.getElementById('main-content');
@@ -811,7 +820,7 @@
                             } else if (e.target.classList.contains('load-piece-btn')) {
                                 const pieceDoc = await getDoc(doc(db, "atelierData", currentUser.uid, "pieces", pieceId));
                                 if (pieceDoc.exists()) {
-                                    localStorage.setItem('unsavedPiece', JSON.stringify(pieceDoc.data()));
+                                    localStorage.setItem('loadPieceData', JSON.stringify(pieceDoc.data()));
                                     navigate('#calculator');
                                 }
                             }
@@ -845,15 +854,10 @@
                                     settingsStatus.classList.add('text-brand-olive');
                                     settingsStatus.style.opacity = '1';
                                     setTimeout(() => { settingsStatus.style.opacity = '0'; }, 2000);
-                                })
-                                .catch(() => {
-                                    settingsStatus.querySelector('span').textContent = 'Erro ao salvar!';
-                                    settingsStatus.classList.add('text-red-500');
                                 });
                         });
                     } else if (targetView === 'calculator') {
                         setupCalculator();
-                        checkAndRestorePiece();
                     } else if (targetView === 'dashboard') {
                         document.getElementById('welcomeMessage').textContent = `Bem-vinda, ${currentUser.displayName || 'Artesã'}!`;
                     }

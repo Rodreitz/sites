@@ -368,6 +368,7 @@
                             <input type="text" inputmode="decimal" id="settingsHoursWorked" class="settings-input numeric-input w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm" placeholder="80">
                         </div>
                     </div>
+                     <button id="saveAtelierButton" class="mt-4 w-full bg-brand-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-brand-text transition-colors">Salvar Dados do Ateliê</button>
                 </section>
             </div>
         </div>
@@ -839,26 +840,22 @@
                             alert('Perfil atualizado!');
                         });
 
-                        document.querySelectorAll('.settings-input').forEach(input => {
-                            input.addEventListener('input', () => {
-                                clearTimeout(saveTimeout);
-                                settingsStatus.querySelector('span').textContent = 'Salvando...';
-                                settingsStatus.classList.remove('text-brand-olive');
-                                settingsStatus.classList.add('text-yellow-600');
-                                settingsStatus.style.opacity = '1';
-                                saveTimeout = setTimeout(() => {
-                                    atelierData.hourlyRate = document.getElementById('settingsHourlyRate').value;
-                                    atelierData.fixedCosts = document.getElementById('settingsFixedCosts').value;
-                                    atelierData.hoursWorked = document.getElementById('settingsHoursWorked').value;
-                                    setDoc(atelierDataRef, { ...atelierData }, { merge: true })
-                                        .then(() => {
-                                            settingsStatus.querySelector('span').textContent = 'Salvo na nuvem!';
-                                            settingsStatus.classList.remove('text-yellow-600');
-                                            settingsStatus.classList.add('text-brand-olive');
-                                            setTimeout(() => { settingsStatus.style.opacity = '0'; }, 2000);
-                                        });
-                                }, 1500);
-                            });
+                        document.getElementById('saveAtelierButton').addEventListener('click', () => {
+                            atelierData.hourlyRate = document.getElementById('settingsHourlyRate').value;
+                            atelierData.fixedCosts = document.getElementById('settingsFixedCosts').value;
+                            atelierData.hoursWorked = document.getElementById('settingsHoursWorked').value;
+                            setDoc(atelierDataRef, { ...atelierData }, { merge: true })
+                                .then(() => {
+                                    settingsStatus.querySelector('span').textContent = 'Salvo na nuvem!';
+                                    settingsStatus.classList.remove('text-yellow-600');
+                                    settingsStatus.classList.add('text-brand-olive');
+                                    settingsStatus.style.opacity = '1';
+                                    setTimeout(() => { settingsStatus.style.opacity = '0'; }, 2000);
+                                })
+                                .catch(() => {
+                                    settingsStatus.querySelector('span').textContent = 'Erro ao salvar!';
+                                    settingsStatus.classList.add('text-red-500');
+                                });
                         });
                     } else if (targetView === 'calculator') {
                         setupCalculator();

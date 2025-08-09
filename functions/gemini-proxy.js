@@ -26,7 +26,7 @@ exports.handler = async function (event, context) {
 
     // ** LÓGICA DE CONSTRUÇÃO DO PROMPT NO SERVIDOR (VERSÃO REFINADA) **
     if (data.type === 'description') {
-      prompt = `Crie uma legenda para Instagram sobre a venda de um(a) "${data.pieceName}" que custa ${data.finalPrice}, feito(a) com ${data.materials.join(', ')}.
+      prompt = `Você é uma artesã que vende suas peças nas redes sociais. Crie uma legenda para Instagram sobre a venda de um(a) "${data.pieceName}" que custa ${data.finalPrice}, feito(a) com ${data.materials.join(', ')}.
 A legenda deve:
 
 Ter tom humano, acolhedor e levemente persuasivo.

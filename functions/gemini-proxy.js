@@ -26,9 +26,34 @@ exports.handler = async function (event, context) {
 
     // ** LÓGICA DE CONSTRUÇÃO DO PROMPT NO SERVIDOR (VERSÃO REFINADA) **
     if (data.type === 'description') {
-      prompt = `Aja como uma artesã carinhosa e criativa, falando com uma amiga. Crie uma legenda curta e charmosa para um post de Instagram sobre a venda de um(a) "${data.pieceName}". O preço é ${data.finalPrice}. A peça foi feita com ${data.materials.join(', ')}. O texto deve ser dividido em pequenos parágrafos, usar uma linguagem natural e casual, e terminar com uma chamada para ação convidativa. Use poucos e bons emojis. Evite usar asteriscos ou negrito.`;
+      prompt = `Crie uma legenda para Instagram sobre a venda de um(a) "${data.pieceName}" que custa ${data.finalPrice}, feito(a) com ${data.materials.join(', ')}.
+A legenda deve:
+
+Ter tom humano, acolhedor e levemente persuasivo.
+
+Ter 2 a 4 parágrafos curtos, fáceis de ler no celular.
+
+Usar uma linguagem simples, com leve toque poético ou visual (descrevendo sensações, detalhes, cores).
+
+Terminar com uma chamada para ação que convida a pessoa a comprar ou perguntar mais detalhes.
+
+Usar no máximo 4 emojis relevantes e distribuídos com naturalidade.
+
+Evitar negrito, caixa alta ou excesso de pontuação.`;
     } else if (data.type === 'suggestions') {
-      prompt = `Aja como uma mentora de artesanato experiente e amigável. Crie 3 dicas rápidas e fáceis de entender para ajudar uma artesã a vender melhor seu/sua "${data.pieceName}", que custa ${data.finalPrice}. As dicas devem ser curtas, diretas e em um tom encorajador. Use uma linguagem simples. Formate a resposta em uma lista numerada (1., 2., 3.).`;
+      prompt = `Aja como uma mentora experiente em vendas de artesanato, com um tom encorajador e direto, como se estivesse dando conselhos valiosos para uma aluna.
+Crie 3 dicas práticas para ajudar a vender um(a) "${data.pieceName}" que custa ${data.finalPrice}.
+As dicas devem:
+
+Ser claras, simples e aplicáveis imediatamente.
+
+Mostrar como valorizar o trabalho, comunicar benefícios e gerar urgência.
+
+Ter no máximo 2 frases cada, focando em impacto e ação.
+
+Ser numeradas (1., 2., 3.) para facilitar a leitura.
+
+Usar verbos no imperativo para estimular a ação (ex.: “Mostre”, “Destaque”, “Ofereça”).`;
     } else {
       throw new Error("Tipo de solicitação inválido.");
     }

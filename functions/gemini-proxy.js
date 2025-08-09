@@ -53,7 +53,9 @@ Ter no máximo 2 frases cada, focando em impacto e ação.
 
 Ser numeradas (1., 2., 3.) para facilitar a leitura.
 
-Usar verbos no imperativo para estimular a ação (ex.: “Mostre”, “Destaque”, “Ofereça”).`;
+Usar verbos no imperativo para estimular a ação (ex.: “Mostre”, “Destaque”, “Ofereça”).
+
+Evitar negrito, caixa alta ou excesso de pontuação.`;
     } else {
       throw new Error("Tipo de solicitação inválido.");
     }
